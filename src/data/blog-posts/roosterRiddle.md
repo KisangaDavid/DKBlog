@@ -2,7 +2,7 @@
 title: "Puzzle: The Undefeated Rooster"
 slug: roosterRiddle
 publishDate: November 9, 2025
-description: You must defeat a surprisingly intelligent rooster in a battle of wits involving 4 piles of kernels. There are only 3 rules of battle...
+description: You must defeat a surprisingly intelligent rooster in a battle of wits involving 4 piles of corn kernels. There are only 3 rules of battle...
 ---
 <div classname="centered-image">
 
@@ -61,10 +61,10 @@ pre {
 </style>
 
 ## Puzzle
-You must defeat a surprisingly intelligent rooster in a battle of wits involving 4 piles of kernels. There are only 3 rules of battle:
+You must defeat a surprisingly intelligent rooster in a battle of wits involving 4 piles of corn kernels. There are only 3 rules of battle:
  
 1. You and the rooster each take turns picking up kernels of corn, with you going first. 
-2. On your turn you must take a positive number of kernels from a single pile. 
+2. Each turn consists of taking a positive number of kernels from a single pile. 
 3. The one who takes the last kernel wins.
 
 
@@ -98,7 +98,7 @@ nim-sum is 0
 2. If the nim-sum of a position is already 0, then there is no
 valid move that results in a position with a nim-sum of 0
 
-3. If the nim-sum of a position is not 0, there exists a move
+3. If the nim-sum of a position is not 0, there always exists a move
 that results in a position with a nim-sum of 0
 
 <br />
@@ -133,7 +133,7 @@ made up entirely of 0s is 0.
 
 <br />
 
-### Lemma #3: If the nim-sum of a position is not 0, there exists a move that results in a position with a nim-sum of 0
+### Lemma #3: If the nim-sum of a position is not 0, there always exists a move that results in a position with a nim-sum of 0
 
 > This lemma is a little more involved. First, let's define the
 > shorthand *X<sub>y</sub>*. This is the value of the bit in 
@@ -152,7 +152,7 @@ The defined terms for a sample position with piles of sizes 4, 5, and 6
 
 > Using the above definitions, there must exist at least one 
 > pile *P* where *P<sub>i</sub>* = 1. This is due to the 
-> fact that if all piles had a 0 in their*i*th position, 
+> fact that if all piles had a 0 in their *i*th position, 
 > then *N<sub>i</sub>* would also be 0, contradicting our 
 > definition of *i*. We will play in this pile, and reduce the 
 > number of kernels in *P* from *k* to *k'*. We can 

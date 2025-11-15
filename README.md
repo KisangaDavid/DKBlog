@@ -1,1 +1,1 @@
-🚧🚧🚧 README currently under construction 🚧🚧🚧. In the meantime, [check out the blog here!](TODO: fill out link)
+🚧🚧🚧 README currently under construction 🚧🚧🚧. In the meantime, [check out the blog here!](https://www.blog.dkisanga.com)

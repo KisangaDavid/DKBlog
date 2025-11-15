@@ -63,6 +63,12 @@ description: You need to figure out the fastest 3 horses from a group of 25. You
 }
 </style>
 
+<div class="centered-image">
+
+![Rat Riddle Image](../../assets/horseRiddleThumbnail.png)
+
+</div>
+
 ## The Puzzle
 
 You need to figure out the fastest 3 horses from a group of 25. You can only race 5 horses at a time
