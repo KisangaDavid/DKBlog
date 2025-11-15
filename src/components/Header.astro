@@ -1,0 +1,40 @@
+---
+import { Image } from 'astro:assets';
+import TheBigDK from '../assets/TheBigDK.webp';
+import Nav from './Nav.astro'
+
+const { current = '' } = Astro.props;
+---
+
+<style>
+  header {
+    display: flex;
+    margin: 0 auto;
+    max-width: 1400px;
+    padding: 2em;
+    width: 100%;
+  }
+
+  @media screen and (max-width: 520px) {
+    header {
+      padding: 2em 0;
+    }
+  }
+
+  header img {
+    display: block;
+    width: 100px;
+  }
+
+  @media screen and (max-width: 520px) {
+  header img {
+      display: none;
+    }
+  }
+
+</style>
+
+<header >
+  <Image src={TheBigDK} alt="The Big DK" />
+  <Nav current={current} />
+</header>

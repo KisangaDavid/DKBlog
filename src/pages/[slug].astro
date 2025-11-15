@@ -1,0 +1,63 @@
+---
+import { getCollection, render } from 'astro:content'
+import readingTime from 'reading-time'
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+	const posts = await getCollection('posts')
+  return posts.map(p => ({
+    params: { slug: p.data.slug },
+    props: { post: p },
+  }));
+}
+
+const { post } = Astro.props
+const { title, description, publishDate } = post.data;
+const readingTimeEstimate = readingTime(post.body).text
+const { Content } = await render(post)
+---
+
+<BaseLayout title={title} description={description} current="blog">
+  <header>
+    <h1>{title}</h1>
+    <p>{publishDate} ~ {readingTimeEstimate}</p>
+    <hr />
+  </header>
+  <div class="container">
+    <article class="content">
+      <Content />
+      <br />
+    </article>
+  </div>
+</BaseLayout>
+
+<style>
+  header {
+    text-align: center;
+  }
+
+  header h1 {
+    margin-bottom: 0;
+    font-size: 2.4em;
+  }
+  
+  header p {
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-family: var(--font-family-sans);
+    font-weight: 600;
+    margin-top: 0.5rem;
+  }
+
+  header hr {
+    margin-top: 0rem;
+    margin-bottom: 1rem;
+    min-width: 100px;
+    width: 45rem;
+  }
+
+  body {
+    background-image: var(--background-imageBlog);
+  }
+  
+</style>

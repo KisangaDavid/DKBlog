@@ -1,0 +1,85 @@
+---
+import { getCollection } from 'astro:content'
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'Blog';
+const description = 'Latest articles.';
+
+let allPosts = await getCollection('posts')
+allPosts = allPosts.sort((a, b) => new Date(b.data.publishDate).valueOf() - new Date(a.data.publishDate).valueOf());
+---
+
+<BaseLayout title={title} description={description} current="">
+  <div class="container">
+    <h1>All Blogs</h1>
+    <br />
+    {allPosts.map((post, index) => {
+      const href = `/${post.data.slug}`;
+      return (
+        <div>
+          { index !== 0 && <hr /> }
+          <a href={href}>
+            <div class="post-item">
+              <h3>
+              {post.data.title}
+              </h3>
+              <div class="post-item-date">
+                {post.data.publishDate}
+              </div>
+              <p>{post.data.description}</p>
+              <div class="post-item-footer">
+                <span class="post-item-date">Read More →</span>
+              </div>
+            </div>
+          </a>
+        </div>
+      )
+    })}
+  </div>
+</BaseLayout>
+
+<style>
+  .post-item-footer {
+    font-family: var(--font-family-sans);
+    font-weight: 700;
+  }
+
+  .post-item-date {
+    color: var(--text-secondary);
+    text-align: left;
+    font-size: 0.9em;  
+    margin-right: 16px;
+  }
+
+  hr {
+    margin: 15px auto;
+    margin-left: 15px;
+  }
+
+  .post-item {
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    padding-right: 15px;
+    padding-left: 15px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-radius: 10px;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  p {
+    font-size: 1em;
+    line-height: 1.7em;
+  }
+
+  h1 {
+    padding-left: 15px;
+  }
+  .post-item:hover {
+    background-color: var(--card-hover); 
+    cursor: pointer;
+    transform: translateX(5px);
+  }
+</style>
