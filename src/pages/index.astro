@@ -2,8 +2,8 @@
 import { getCollection } from 'astro:content'
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const title = 'Blog';
-const description = 'Latest articles.';
+const title = "David's Blog";
+const description = 'A collection of random puzzles and thoughts';
 
 let allPosts = await getCollection('posts')
 allPosts = allPosts.sort((a, b) => new Date(b.data.publishDate).valueOf() - new Date(a.data.publishDate).valueOf());
@@ -77,9 +77,13 @@ allPosts = allPosts.sort((a, b) => new Date(b.data.publishDate).valueOf() - new 
   h1 {
     padding-left: 15px;
   }
-  .post-item:hover {
-    background-color: var(--card-hover); 
-    cursor: pointer;
-    transform: translateX(5px);
+
+  @media (hover: hover) {
+    .post-item:hover {
+      background-color: var(--card-hover); 
+      cursor: pointer;
+      transform: translateX(5px);
   }
+}
+
 </style>

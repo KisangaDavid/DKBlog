@@ -9,6 +9,7 @@ export interface Props {
 }
 
 const { title, description  } = Astro.props
+const imgUrl = Astro.site.href + 'assets/thumbnail.png'
 ---
 
 <!-- Global Metadata -->
@@ -21,4 +22,5 @@ const { title, description  } = Astro.props
 <meta name="title" content={title} />
 <meta name="description" content={description} />
 
+<meta property="og:image" content={imgUrl} />
 <ClientRouter />

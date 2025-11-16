@@ -24,6 +24,7 @@
 
 html {
   overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 @supports (scrollbar-gutter: stable) {
@@ -31,6 +32,15 @@ html {
     overflow-y: auto;
     scrollbar-gutter: stable;
   }
+}
+
+html:before{
+    content:"";
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    background-image: var(--background-imageMain);
+    z-index: -1;
 }
 
 *,
