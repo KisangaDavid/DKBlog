@@ -18,7 +18,9 @@ const { Content } = await render(post)
 ---
 
 <BaseLayout title={title} description={description} current="blog">
+  
   <header>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
     <h1>{title}</h1>
     <p>{publishDate} ~ {readingTimeEstimate}</p>
     <hr />

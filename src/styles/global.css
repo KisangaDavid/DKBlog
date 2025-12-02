@@ -57,7 +57,6 @@ body {
   color: var(--text-main);
   margin: 0;
   font-family: var(--font-family-serif);
-  font-size: 16px;
   line-height: 1.6;
   background-image: var(--background-imageMain);
   background-repeat: no-repeat;
