@@ -70,8 +70,8 @@ To get a sense of what the answer is, we can break down the puzzle into two case
 
 <br />
 
-If the highest numbered box that contains a present (box *i*) is even, Bob cannot win. This is because both
-Alice and Bob will reveal the 26th present precisely when they open box *i*. Since Alice opens all
+If the highest numbered box that contains a present  is even, Bob cannot win. This is because both
+Alice and Bob will reveal the 26th present precisely when they open this box. Since Alice opens all
 even boxes before Bob (with the small exception box box 100, which they both open at the same time), she is guaranteed to never lose in this scenario.
 
 <br />
@@ -86,7 +86,14 @@ By looking at the two scenarios above, we can reasonably conclude that Alice sho
 
 ## Rigorous Solution
 
-Intuition is nice and all, but cold hard numbers are better! We begin our rigorous solution by calculating the exact probabilities of the two cases outlined above - the highest numbered box that contains a present (box *i*) is even / odd. Note that from here on out, *p* is assigned the probability that a given box contains a present (0.26), and *q* is assigned the probability that a given box does not contain a present (0.74):
+Intuition is nice and all, but cold hard numbers are better! We begin our rigorous solution by calculating the exact probabilities of the two cases outlined above - the highest numbered box that contains a present is even / odd. First, let's define three terms that will be used extensively in the rest of this writeup:
+>$i$: the highest numbered box that contains a present <br />
+>$p$: the probability a given box contains a present, (0.26) <br />
+>$q$: the probability a given box does not contain a present, (0.74) <br />
+
+With our terms defined, we can now calculate the aforementioned probabilities:
+
+<br />
 
 $$
 \begin{align*}
@@ -106,18 +113,53 @@ $$
 \end{align*}
 $$
 
-Using the above, we can trivially derive the probability of *i* being odd to be 0.4253.
 
-Say something about all even / all odd. Big ol' formula . Disregard. as will not make a significant difference in our probabilities
-Armed with the above information, we can now begin calculating the exact probability that Bob reveals all26 presents first:
 
+It follows from the above that the probability of $i$ being odd is 0.4253.
+
+<br />
+
+Additionally, let's calculate the probability that all 26 presents happen to be placed into even boxes:
+
+$$
+
+\Pr(\text{all 26 presents are in an even box})= \\\\[0.5cm]
+\quad \frac{\text{\# of configurations where all 26 presents are in even boxes}}{\text{\# of total configurations possible}} = \\\\[0.5cm]
+\quad \frac{\binom{50}{26}}{\binom{100}{26}} = \\\\[0.5cm]
+1.73*10^{-10}
+
+$$
+
+As there are the same amount of even and odd boxes, the probability that all 26 boxes happen to be placed into odd boxes is also $1.73*10^{-10}$. Since these probabilities are ***extremely*** small, I'll save us some time and digital paper by disregarding these scenarios in future calculations - including them wouldn't make a noticable difference in our final computed probabilities.
+
+<br />
+
+Finally, let's calculate the amount of time it takes Alice and Bob to reveal all 26 presents. For this, we'll define two additional terms: <br />
+>$e$: the highest even-numbered box that contains a present <br />
+>$o$: the highest odd-numbered box that contains a present <br />
+
+Defining these terms makes calculating how long it takes each participant to reveal all 26 presents simple - Alice will reveal the 26th present in exactly $\text{max}(e, o)$ seconds, while 
+Bob will reveal the 26th present in exactly $50 + \frac{e}{2}$ seconds (Bob reveals all 50 odd boxes first, then reveals all even boxes
+sequentially until he reveals box $e$).
+
+
+Armed with the above information, we can now begin calculating the exact probability that Bob reveals all 26 presents first.
+
+<br />
 <br />
 
 ### Calculating Bob's Probability to Win
-split into 3 cases, all even, all odd, mix. All even = Bob never wins, all odd = Bob always wins, case when mixed: 
+
+We'll now split into two possible cases, $e$ > $o$, and $e$ < *0*. 
+
+If $e > o$: <br />
+Alice will reveal all 26 presents in $e$ seconds, and Bob will reveal all 26 presents in $50 + \frac{e}{2}$ seconds. For any $e \leq 100$, $e \leq 50 + \frac{e}{2}$. Therefore, Bob can never win in this scenario.
+
+If $e < o$: <br />
+Alice will reveal all 26 presents in $o$ seconds, and Bob will reveal all 26 presents in $50 + \frac{e}{2}$ seconds. Therefore, Bob wins if $50 + \frac{e}{2} < o$. Re-arranging the previous $100 + e < 2o$. In other words, for any given $e$, Bob will win if o > 50 + e/2
 <br />
 
-> Alice will open any even numbered *e* in *e* seconds, while Bob will open any even numbered box *e* in (50 + *e* / 2) seconds. *e* < (50 + *e* / 2) for any *e* < 100, and *e* = (50 + *e* / 2) for *e* = 100.
+> Alice will open any even numbered $e$ in $e$ seconds, while Bob will open any even numbered box $e$ in (50 + $e$ / 2) seconds. $e$ < (50 + $e$ / 2) for any $e$ < 100, and $e$ = (50 + $e$ / 2) for $e$ = 100.
 
 
 Therefore, if the highest numbered box that contains a present is even, Alice will reveal all 26 presents first. 
@@ -128,7 +170,7 @@ Therefore, if the highest numbered box that contains a present is even, Alice wi
 
 ### Case 2: The highest numbered box that contains a present is odd
 
-In this case, it is not guaranteed that Bob will reveal the 26th present precisely when he opens box *i* - since he 
+In this case, it is not guaranteed that Bob will reveal the 26th present precisely when he opens box $i$ - since he 
 Therefore, there are many scenarios where Alice reveals the 26th present much earlier than Bob. - for example if 
 the 2 highest  were 50 and 51.
 
@@ -151,7 +193,7 @@ $$
 > shorthand *X<sub>y</sub>*. This is the value of the bit in 
 > position *y* of *X's* binary representation. We'll 
 > additionally define *N* to be the nim-sum of all of the 
-> remaining piles, and *i* to be the position of the most 
+> remaining piles, and $i$ to be the position of the most 
 > significant 1 bit in *N*. 
 
 <div classname="centered-image with-border">
