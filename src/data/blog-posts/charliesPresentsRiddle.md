@@ -93,8 +93,6 @@ Intuition is nice and all, but cold hard numbers are better! We begin our rigoro
 
 With our terms defined, we can now calculate the aforementioned probabilities:
 
-<br />
-
 $$
 \begin{align*}
 \Pr(\text{i is even})
@@ -150,42 +148,91 @@ Armed with the above information, we can now begin calculating the exact probabi
 
 ### Calculating Bob's Probability to Win
 
-We'll now split into two possible cases, $e$ > $o$, and $e$ < *0*. 
+First, we split the possible configurations of presents into two cases, $e$ > $o$, and $e$ < *0*. 
 
-If $e > o$: <br />
+**e > o:** <br />
 Alice will reveal all 26 presents in $e$ seconds, and Bob will reveal all 26 presents in $50 + \frac{e}{2}$ seconds. For any $e \leq 100$, $e \leq 50 + \frac{e}{2}$. Therefore, Bob can never win in this scenario.
 
-If $e < o$: <br />
-Alice will reveal all 26 presents in $o$ seconds, and Bob will reveal all 26 presents in $50 + \frac{e}{2}$ seconds. Therefore, Bob wins if $50 + \frac{e}{2} < o$. Re-arranging the previous $100 + e < 2o$. In other words, for any given $e$, Bob will win if o > 50 + e/2
-<br />
-
-> Alice will open any even numbered $e$ in $e$ seconds, while Bob will open any even numbered box $e$ in (50 + $e$ / 2) seconds. $e$ < (50 + $e$ / 2) for any $e$ < 100, and $e$ = (50 + $e$ / 2) for $e$ = 100.
-
-
-Therefore, if the highest numbered box that contains a present is even, Alice will reveal all 26 presents first. 
-
-
-<br />
-<br />
-
-### Case 2: The highest numbered box that contains a present is odd
-
-In this case, it is not guaranteed that Bob will reveal the 26th present precisely when he opens box $i$ - since he 
-Therefore, there are many scenarios where Alice reveals the 26th present much earlier than Bob. - for example if 
-the 2 highest  were 50 and 51.
-
-<br />
-
-### Calculating Bob's Probability of Winning
-
-<br />
+**e < o:** <br />
+Alice will reveal all 26 presents in $o$ seconds, and Bob will reveal all 26 presents in $50 + \frac{e}{2}$ seconds. Therefore, Bob wins if $50 + \frac{e}{2} < o$. We can calculate Bob's overall probability of winning by calculating his probability of winning for each distinct value of e, and then summing them all together:
 
 $$
-\text{Result}= \sum_{n=2}^{37}p\, q^{n}\!\left(1 - q^{\lfloor n/2 \rfloor}\right)
+\begin{align*}
+\Pr(\text{Bob wins}) &\approx \sum_{x \in E}\Pr(e=x)\Pr(o>50+\frac{x}{2}) \\[0.4cm]
+&=\sum_{n=1}^{50}\Pr(e=2n)\Pr(o>50+n) \\
+\end{align*}
 $$
 
-### Putting it Together: 
+Note that this probability is technically an approximation, as joint probabilities can only be calculated by multiplying individual probabilities if the random variables in question are *independent* - in this case, $e$ and $o$ actually have a (very) weak inverse correlation. To understand the inverse correlation intuitively, imagine that $e = 2$. This means that there are 25 odd boxes with presents in them, immediately forcing $o > 50$. This constraint does not exist if $e=100$. Luckily for us, this correlation only becomes noticable for very low values of $e$ and $o$. These scenarios are extremely unlikely, so treating $e$ and $o$ as independent random variables will not noticebly skew our final computed probabilities.
+
 <br />
+
+With that out of the way, let's breakdown $\Pr(e=2n)$ into something we can actually calculate:
+
+$$
+\begin{align*}
+\Pr(e=2n) &= \Pr(\text{Box 2n has a present}) \\
+  &\quad * \Pr(\text{Box 2n+2 does not have a present}) \\
+  &\quad * \Pr(\text{Box 2n+4 does not have a present}) \\
+  &\quad * \cdots \\
+  &\quad * \Pr(\text{Box 100 does not have a present}) \\
+&=(p)(q)^{50-n} 
+\end{align*}
+$$
+
+<br />
+
+We'll do the same for $\Pr(o > 50 + n)$:
+
+$$
+\begin{align*}
+\Pr(o > 50 + n) &= 1 -\Pr(o <= 50 + n) \\
+  &= 1 - \Pr(\text{No odd numbers higher than 50 + n are included}) \\
+  &= 1 - q^{\text{\# of odd numbers between n and 100}} \\
+  &= 1 - q^{\lfloor\frac{50-n}{2}\rfloor} \\
+\end{align*}
+$$
+
+<br />
+
+With all of the above, we can finally calculate Bob's probability of revealing all 26 presents first:
+
+$$
+\begin{align*}
+\Pr(\text{Bob wins})
+&=\sum_{n=1}^{50}\Pr(e=2n)\Pr(o>50+n) \\
+&=\sum_{n=1}^{50}(p)(q)^{50-n}(1 - q^{\lfloor\frac{50-n}{2}\rfloor}) \\
+&= 0.2394
+\end{align*}
+$$
+
+<br />
+
+### Calculating Alice's Probability of Winning
+
+We again split the possible configurations of presents into two cases, $e$ > $o$, and $e$ < *0*.
+
+**e > o:** <br />
+Alice will reveal all 26 presents in $e$ seconds, and Bob will reveal all 26 presents in $50 + \frac{e}{2}$ seconds. For any $e < 100$, $e < 50 + \frac{e}{2}$. Therefore, Alice will win as long as $e \neq 100$.
+
+$$
+\begin{align*}
+\Pr(\text{Alice wins} \mid e > o) &= \Pr(e \neq 100 \mid e > o) \\[0.2cm]
+&=1 - \Pr(e = 100 \mid e > o) \\[0.2cm]
+&=1 - \frac{\Pr(e > o \mid e=100)\Pr(e = 100)}{\Pr(e > o)} \qquad \text{(Bayes' Theorem)} \\[0.2cm]
+&=1 - \frac{(1)(0.26)}{(0.5747)} \\[0.2cm]
+&= 0.5476
+\end{align*}
+$$
+
+From the above, if $e> o$, Alice will reveal all 26 presents first 54.76% of the time.
+
+**e < o:** <br />
+Alice will reveal all 26 presents in $o$ seconds, and Bob will reveal all 26 presents in $50 + \frac{e}{2}$ seconds. Therefore, Alice wins if $50 + \frac{e}{2} > o$.
+
+<br />
+
+
 
 ### Lemma #3: If the nim-sum of a position is not 0, there always exists a move that results in a position with a nim-sum of 0
 
@@ -203,10 +250,6 @@ $$
 Twitter poll that reveals more than 80% of people were bamboozled by this puzzle!
 </div>
 </div>
-
-$$
-\text{Result}= \sum_{n=2}^{37}p\, q^{n}\!\left(1 - q^{\lfloor n/2 \rfloor}\right)
-$$
 
 <br />
 
