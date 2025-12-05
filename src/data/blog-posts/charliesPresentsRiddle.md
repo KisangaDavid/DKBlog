@@ -1,13 +1,9 @@
 ---
 title: "Puzzle: Charlie's Presents"
 slug: CharliesPresents
-publishDate: November 30, 2025
-description: Charlie puts 26 presents in 100 boxes, labeled 1 to 100. Each second, Alic and Bob look in one box. Alice opens them in order...
+publishDate: December 5, 2025
+description: Charlie puts 26 presents in 100 boxes, labeled 1 to 100. Each second, Alice and Bob look in one box. Alice opens them in order...
 ---
-<div classname="centered-image">
-
-![Rooster](../../assets/roosterRiddleThumbnail.png)
-</div>
 
 <style>
   p {
@@ -40,6 +36,14 @@ pre {
     margin-bottom: 0.7em;
   }
 
+  .centered-image-presents img {
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 0.7em;
+    max-height: 32em;
+    object-fit: contain;
+  }
+
   .with-border img {
     border-radius: 8px;
     border: 1px solid black;
@@ -60,9 +64,14 @@ pre {
   }
 </style>
 
+<div classname="centered-image-presents">
+
+![Presents](../../assets/charliesPresents.png)
+
+</div>
+
 ## Puzzle
 Charlie puts 26 presents in 100 boxes, labeled 1 to 100. Each second, Alice and Bob look in one box. Alice opens them in order (1,2,3,...), while Bob opens the odds first, then the evens (1,3,5,...,2,4,6,...) Who is more likely to see all 26 presents first?
-
   
 ## Intuitive Solution
 
@@ -111,8 +120,6 @@ $$
 \end{align*}
 $$
 
-
-
 It follows from the above that the probability of $i$ being odd is 0.4253.
 
 <br />
@@ -120,12 +127,10 @@ It follows from the above that the probability of $i$ being odd is 0.4253.
 Additionally, let's calculate the probability that all 26 presents happen to be placed into even boxes:
 
 $$
-
 \Pr(\text{all 26 presents are in an even box})= \\\\[0.5cm]
 \quad \frac{\text{\# of configurations where all 26 presents are in even boxes}}{\text{\# of total configurations possible}} = \\\\[0.5cm]
 \quad \frac{\binom{50}{26}}{\binom{100}{26}} = \\\\[0.5cm]
 1.73*10^{-10}
-
 $$
 
 As there are the same amount of even and odd boxes, the probability that all 26 boxes happen to be placed into odd boxes is also $1.73*10^{-10}$. Since these probabilities are ***extremely*** small, I'll save us some time and digital paper by disregarding these scenarios in future calculations - including them wouldn't make a noticable difference in our final computed probabilities.
@@ -139,7 +144,6 @@ Finally, let's calculate the amount of time it takes Alice and Bob to reveal all
 Defining these terms makes calculating how long it takes each participant to reveal all 26 presents simple - Alice will reveal the 26th present in exactly $\text{max}(e, o)$ seconds, while 
 Bob will reveal the 26th present in exactly $50 + \frac{e}{2}$ seconds (Bob reveals all 50 odd boxes first, then reveals all even boxes
 sequentially until he reveals box $e$).
-
 
 Armed with the above information, we can now begin calculating the exact probability that Bob reveals all 26 presents first.
 
@@ -158,7 +162,8 @@ Alice will reveal all 26 presents in $o$ seconds, and Bob will reveal all 26 pre
 
 $$
 \begin{align*}
-\Pr(\text{Bob wins}) &\approx \sum_{x \in E}\Pr(e=x)\Pr(o>50+\frac{x}{2}) \\[0.4cm]
+\Pr(\text{Bob wins}) &\approx \sum_{x \in E}\Pr(e=x)\Pr(o>50+\frac{x}{2} \cap o > x) \\[0.4cm]
+&= \sum_{x \in E}\Pr(e=x)\Pr(o>50+\frac{x}{2}) \qquad (o>50+\frac{x}{2} \text{ guarantees } o > x )\\[0.4cm]
 &=\sum_{n=1}^{50}\Pr(e=2n)\Pr(o>50+n) \\
 \end{align*}
 $$
@@ -207,51 +212,121 @@ $$
 $$
 
 <br />
+<br />
 
-### Calculating Alice's Probability of Winning
+### Calculating The Probability of a Tie
 
-We again split the possible configurations of presents into two cases, $e$ > $o$, and $e$ < *0*.
+We again split the possible configurations of presents into two cases, $e > o$ and $e < o$.
 
 **e > o:** <br />
-Alice will reveal all 26 presents in $e$ seconds, and Bob will reveal all 26 presents in $50 + \frac{e}{2}$ seconds. For any $e < 100$, $e < 50 + \frac{e}{2}$. Therefore, Alice will win as long as $e \neq 100$.
-
-$$
-\begin{align*}
-\Pr(\text{Alice wins} \mid e > o) &= \Pr(e \neq 100 \mid e > o) \\[0.2cm]
-&=1 - \Pr(e = 100 \mid e > o) \\[0.2cm]
-&=1 - \frac{\Pr(e > o \mid e=100)\Pr(e = 100)}{\Pr(e > o)} \qquad \text{(Bayes' Theorem)} \\[0.2cm]
-&=1 - \frac{(1)(0.26)}{(0.5747)} \\[0.2cm]
-&= 0.5476
-\end{align*}
-$$
-
-From the above, if $e> o$, Alice will reveal all 26 presents first 54.76% of the time.
-
-**e < o:** <br />
-Alice will reveal all 26 presents in $o$ seconds, and Bob will reveal all 26 presents in $50 + \frac{e}{2}$ seconds. Therefore, Alice wins if $50 + \frac{e}{2} > o$.
+Alice will reveal all 26 presents in $e$ seconds, and Bob will reveal all 26 presents in $50 + \frac{e}{2}$ seconds. $e = 50 + \frac{e}{2}$
+only when e = 100, so the the probability of a tie is simply the probability that $e=100$, or 0.26. 
 
 <br />
 
+**e < o:** <br />
+Alice will reveal all 26 presents in $o$ seconds, and Bob will reveal all 26 presents in $50 + \frac{e}{2}$ seconds. Therefore, a tie occurs when $50 + \frac{e}{2} = o$.
 
+$$
+\begin{align*}
+\Pr(\text{Tie}) &\approx \sum_{x \in E}\Pr(e = x)\Pr(o=50+\frac{x}{2})\\[0.2cm]
+&=\sum_{n=1}^{25}\Pr(e = 4n-2)\Pr(o=2n+49)\\[0.2cm]
+&=\sum_{n=1}^{25}pq^{51-2n}pq^{25-n}\\[0.2cm]
+&=\sum_{n=1}^{25}p^2q^{76-3n}\\[0.2cm]
+&= 0.0841
+\end{align*}
+$$
 
-### Lemma #3: If the nim-sum of a position is not 0, there always exists a move that results in a position with a nim-sum of 0
+Notice that just like when we calculated Bob's probability to win, we again treat $e$ and $o$ as independent random variables. 
+We'll show how inconsequential this approximation is in the upcoming section. 
 
-> This lemma is a little more involved. First, let's define the
-> shorthand *X<sub>y</sub>*. This is the value of the bit in 
-> position *y* of *X's* binary representation. We'll 
-> additionally define *N* to be the nim-sum of all of the 
-> remaining piles, and $i$ to be the position of the most 
-> significant 1 bit in *N*. 
+Combining the above two scenarios, we arrive at an overall probability of $0.26 + 0.0841 = 0.3441$ for a tie. <br />
 
+<br />
+<br />
+
+### Checking Our Work
+
+At this point you may be wondering if I'm just throwing numbers around and hoping no one looks too close. Or maybe you're skeptical of of all those times I treated $e$ and $o$ as independent random variables even though they're *technically*&nbsp; not. Well, in this section I put both doubts to rest. Let's start by reminding ourselves of the probabilities we calculated:
+
+>**Probability Bob wins:** (0.2394) <br />
+>**Probability of a tie:** (0.3441) <br />
+>**Probability Alice wins:** (0.4165) (derived from the above) <br />
+
+Now, let's bang out a simple python script that will estimate the true probabilities by running a bunch of simulated games:
+
+```py
+import random
+
+def simulate_boxes(num_simulations):
+    num_ties = 0
+    alice_wins = 0
+    bob_wins = 0
+
+    for _ in range(num_simulations):
+        chosen_numbers = set(random.sample(range(1, 101), 26))
+        alice_order = list(range(1, 101))
+        bob_order = list(range(1, 100, 2)) + list(range(2, 101, 2))
+        
+        alice_presents_seen = 0
+        alice_time = 0
+        for time, box in enumerate(alice_order):
+            if box in chosen_numbers:
+                alice_presents_seen += 1
+                if alice_presents_seen == 26:
+                    alice_time = time + 1  
+                    break
+        
+        bob_presents_seen = 0
+        bob_time = 0
+        for time, box in enumerate(bob_order):
+            if box in chosen_numbers:
+                bob_presents_seen += 1
+                if bob_presents_seen == 26:
+                    bob_time = time + 1  
+                    break
+        
+        if alice_time == bob_time:
+            num_ties += 1
+        elif alice_time < bob_time:
+            alice_wins += 1
+        else:
+            bob_wins += 1
+        
+    alice_probability = alice_wins / num_simulations
+    bob_probability = bob_wins / num_simulations
+    tie_probability = num_ties / num_simulations
+    
+    print(f"Alice win probability: ({alice_probability*100:.2f}%)\n")
+    print(f"Bob win probability: ({bob_probability*100:.2f}%)\n")
+    print(f"Tie probability: ({tie_probability*100:.2f}%)\n")
+    
+if __name__ == "__main__":
+    simulate_boxes(1000000)
+```
+
+Output:
+
+> Alice win probability: (41.65%) <br />
+> Bob win probability: (23.95%) <br />
+> Tie probability: (34.40%) <br />
+
+Our calculated probabilities are less than a hundredth of a percent off of the estimated true probabilities - well within the bounds of variance!
+
+<br />
+
+## Conclusion
+
+Whew, that turned out to be way more work than I was expecting! If you enjoyed this puzzle breakdown,
+take a look at some of the other ones on this blog, or peep my [interactive puzzle website!](https://theriddleman.com)
+Also check out Daniel Litt on Twitter - I was inspired to make this breakdown when a friend sent me [Twitter poll:](https://x.com/littmath/status/1990807150101475653)
 <div classname="centered-image with-border">
 
 ![Puzzle Poll](../../assets/26PresentsPoll.png)
 <div classname="caption-text">
-Twitter poll that reveals more than 80% of people were bamboozled by this puzzle!
+More than 80% of people were bamboozled by this puzzle!
 </div>
 </div>
 
 <br />
-
-
-
+<br />
