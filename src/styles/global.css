@@ -133,8 +133,16 @@ a {
   transition: color linear 0.15s;
 }
 
-a:hover {
-  color: var(--primary-color);
+@media (hover: hover) {
+  a:hover {
+     color: var(--primary-color);
+  }
+}
+
+@media (hover: none) {
+  a:active {
+    color: var(--primary-color);
+  }
 }
 
 p a {
