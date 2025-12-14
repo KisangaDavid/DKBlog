@@ -183,7 +183,7 @@ $$
 \begin{align*}
 \Pr(o > 50 + n) &= 1 -\Pr(o <= 50 + n) \\
   &= 1 - \Pr(\text{No odd numbers higher than 50 + n are included}) \\
-  &= 1 - q^{\text{\# of odd numbers between n and 100}} \\
+  &= 1 - q^{\text{\# of odd numbers between n + 50 and 100}} \\
   &= 1 - q^{\lfloor\frac{50-n}{2}\rfloor} \\
 \end{align*}
 $$
