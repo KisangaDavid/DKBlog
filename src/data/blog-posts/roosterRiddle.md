@@ -182,7 +182,7 @@ forced to play a move that results in a non-zero nim-sum (lemma
 Since the winning move must result in a position with a nim-sum of
 0 (lemma #2), you will always win!
 <br /> <br />
-If you found this breakdown interesesting and would like to learn
+If you found this breakdown interesting and would like to learn
 more, check out the [Wikipedia page on Nim!](https://en.wikipedia.org/wiki/Nim)
 
 <br />
