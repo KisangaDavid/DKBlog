@@ -1,6 +1,6 @@
 ---
 title: "Puzzle: Charlie's Presents"
-slug: CharliesPresents
+slug: charliesPresents
 publishDate: December 8, 2025
 description: Charlie puts 26 presents in 100 boxes, labeled 1 to 100. Each second, Alice and Bob look in one box. Alice opens them in order...
 ---
