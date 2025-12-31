@@ -199,3 +199,4 @@ pile is randomized. If the resulting position happens to have a
 nim-sum of 0, one kernel is added to a random pile, ensuring that
 the player always has a winning strategy if they play optimally.
 
+<br />

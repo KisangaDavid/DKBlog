@@ -63,7 +63,11 @@ description: There's a rat on the loose in your 8 house neighborhood, and it's y
 There's a rat on the loose in your 8 house neighborhood, and it's your job to catch it! The rat starts in a random house and moves to an adjacent house every night. Houses 1 and 8 are not considered adjacent. Each day you
 are allowed to trap two houses - if the rat is in one of the two houses you trap, it will be caught. 
 If you trap houses 1 and 2 on the first day, 2 and 3 on the second day, and so on, you are guaranteed to catch the rat
-in at most 7 days. This, however, is not optimal - what trapping strategy is guaranteed to catch the rat in the fewest number of days? [Try the interactive version of the puzzle here!](https://theriddleman.com/ratRiddle)
+in at most 7 days. This, however, is not optimal - what trapping strategy is guaranteed to catch the rat in the fewest number of days? 
+
+[Try the interactive version of the puzzle here!](https://theriddleman.com/ratRiddle)
+
+<br />
 
 <div classname="centered-image">
 
@@ -239,3 +243,5 @@ houses <i>N</i> is given by the expression <i>2X<sub>1/2</sub> - 1</i> if
 X<sub>1/2</sub> is even and <i>N</i> is divisibly by 3, and the 
 expression <i>2X<sub>1/2</sub></i> otherwise. This is the precise
 formula used to validate if a submitted answer to part 2 is correct in the interactive puzzle.
+
+<br />

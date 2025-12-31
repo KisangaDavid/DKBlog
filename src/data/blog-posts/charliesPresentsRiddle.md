@@ -316,4 +316,3 @@ More than 80% of people were bamboozled by this puzzle!
 </div>
 
 <br />
-<br />

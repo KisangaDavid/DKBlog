@@ -1,5 +1,5 @@
 ---
-title: "Puzzle: The Horse Trifecta"
+title: "Puzzle: Horse Trifecta"
 slug: horseRiddle
 publishDate: November 12, 2025
 description: You need to figure out the fastest 3 horses from a group of 25. You can only race 5 horses at a time to find their relative speeds...
@@ -73,9 +73,11 @@ description: You need to figure out the fastest 3 horses from a group of 25. You
 
 You need to figure out the fastest 3 horses from a group of 25. You can only race 5 horses at a time
 to find their relative speeds - timing the horses or finding their absolute speeds by other methods is not allowed. 
-What is the minimum number of races it takes to find the fastest 3 horses? [Try the interactive version of the puzzle here!](https://theriddleman.com/horseRiddle)
+What is the minimum number of races it takes to find the fastest 3 horses? 
 
- <br />
+[Try the interactive version of the puzzle here!](https://theriddleman.com/horseRiddle)
+
+<br />
 
 ## Solution
 The solution to this puzzle is remeniscent of a multi-way merge
@@ -229,3 +231,5 @@ fastest!
 If such a situation happens while determining the 1st, 2nd, or 3rd
 fastest horse, then the submitted trifecta / series of races is
 invalid!
+
+<br />
