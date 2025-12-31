@@ -80,7 +80,7 @@ What is the minimum number of races it takes to find the fastest 3 horses?
 <br />
 
 ## Solution
-The solution to this puzzle is remeniscent of a multi-way merge
+The solution to this puzzle is reminiscent of a multi-way merge
 sort. To start, 5 ordered lists of horses are attained by
 conducting 5 races in which every horse is raced exactly once. A
 6th race is conducted with the winners of the previous 5 races.
@@ -214,7 +214,7 @@ Note that, in this specific example, we actually get to know the
 fastest 4 horses after just 7 races! This is not always the case -
 this specific configuration was just lucky. If there are multiple
 source horses, it means that the speed relation between said
-horses is ambiguous. An exmaple is shown below:
+horses is ambiguous. An example is shown below:
 <div classname="centered-image with-border" style="width: 55%; margin: 0 auto">
 
 ![5th Place Horse](../../assets/horseBreakdown5thPlaceGraph.png)

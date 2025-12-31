@@ -1,6 +1,6 @@
 ---
 title: "Puzzle: Charlie's Presents"
-slug: CharliesPresents
+slug: charliesPresents
 publishDate: December 8, 2025
 description: Charlie puts 26 presents in 100 boxes, labeled 1 to 100. Each second, Alice and Bob look in one box. Alice opens them in order...
 ---
@@ -128,7 +128,7 @@ $$
 1.73*10^{-10}
 $$
 
-As there are the same amount of even and odd boxes, the probability that all 26 boxes happen to be placed into odd boxes is also $1.73*10^{-10}$. Since these probabilities are ***extremely*** small, I'll save us some time and digital paper by disregarding these scenarios in future calculations - including them wouldn't make a noticable difference in our final computed probabilities.
+As there are the same amount of even and odd boxes, the probability that all 26 boxes happen to be placed into odd boxes is also $1.73*10^{-10}$. Since these probabilities are ***extremely*** small, I'll save us some time and digital paper by disregarding these scenarios in future calculations - including them wouldn't make a noticeable difference in our final computed probabilities.
 
 Finally, let's calculate the amount of time it takes Alice and Bob to reveal all 26 presents. For this, we'll define two additional terms: <br />
 >$e$: the highest even-numbered box that contains a present <br />
@@ -162,7 +162,7 @@ $$
 \end{align*}
 $$
 
-Note that this probability is technically an approximation, as conditional probabilities are equal to their unconditional counterparts only if the random variables in question are *independent*. That is, $\Pr(o>50+\frac{x}{2} \mid e = x) = \Pr(o>50+\frac{x}{2} )$ only if $e$ and $o$ are independent. In this case, $e$ and $o$ actually have a (very) weak inverse correlation. To understand the inverse correlation intuitively, imagine that $e = 2$. This means that there are 25 odd boxes with presents in them, immediately forcing $o > 50$. This constraint does not exist if $e=100$. Luckily for us, this correlation only becomes noticable for very low values of $e$ and $o$. These scenarios are extremely unlikely, so treating $e$ and $o$ as independent random variables will not noticebly skew our final computed probabilities.
+Note that this probability is technically an approximation, as conditional probabilities are equal to their unconditional counterparts only if the random variables in question are *independent*. That is, $\Pr(o>50+\frac{x}{2} \mid e = x) = \Pr(o>50+\frac{x}{2} )$ only if $e$ and $o$ are independent. In this case, $e$ and $o$ actually have a (very) weak inverse correlation. To understand the inverse correlation intuitively, imagine that $e = 2$. This means that there are 25 odd boxes with presents in them, immediately forcing $o > 50$. This constraint does not exist if $e=100$. Luckily for us, this correlation only becomes noticeable for very low values of $e$ and $o$. These scenarios are extremely unlikely, so treating $e$ and $o$ as independent random variables will not noticeably skew our final computed probabilities.
 
 With that out of the way, let's breakdown $\Pr(e=2n)$ into something we can actually calculate:
 
@@ -183,7 +183,7 @@ $$
 \begin{align*}
 \Pr(o > 50 + n) &= 1 -\Pr(o <= 50 + n) \\
   &= 1 - \Pr(\text{No odd numbers higher than 50 + n are included}) \\
-  &= 1 - q^{\text{\# of odd numbers between n and 100}} \\
+  &= 1 - q^{\text{\# of odd numbers between n + 50 and 100}} \\
   &= 1 - q^{\lfloor\frac{50-n}{2}\rfloor} \\
 \end{align*}
 $$
