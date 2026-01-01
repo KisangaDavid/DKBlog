@@ -75,7 +75,7 @@ pre {
 
 </div>
 
-## Puzzle
+## The Puzzle
 Charlie puts 26 presents in 100 boxes, labeled 1 to 100. Each second, Alice and Bob look in one box. Alice opens them in order (1,2,3,...), while Bob opens the odds first, then the evens (1,3,5,...,2,4,6,...) Who is more likely to see all 26 presents first?
   
 ## Intuitive Solution

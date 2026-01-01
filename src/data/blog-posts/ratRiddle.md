@@ -173,8 +173,8 @@ longer a path from the start node to the end node.
 
 </div>
 
-
-
+<br />
+<br />
 
 ## Bonus Puzzle
 Can you determine how many days it would take to catch the rat in a neighborhood with an
