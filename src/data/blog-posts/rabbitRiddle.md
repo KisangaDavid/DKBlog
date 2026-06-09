@@ -135,6 +135,6 @@ the rabbits is $n^2$.
 
 <br />
 
-Subtracting the number of jumps performed from the total number of spaces the rabbits must traverse gives us the exact formula for the number of moves needed to rearrange the rabbits: $2n^2 + 2n - n^2 = n^2+2n$
+Subtracting the number of jumps performed from the total number of spaces the rabbits must traverse gives us the exact formula for the number of moves needed to rearrange the rabbits: $2n^2 + 2n - n^2 = n^2+2n$.
 
 <br />

@@ -84,7 +84,7 @@ To get a sense of what the answer is, we can break down the puzzle into two case
 
 If the highest numbered box that contains a present is even, Bob cannot win. This is because both
 Alice and Bob reveal the 26th present precisely when they open this box. Since Alice opens all
-even boxes before Bob (with the small exception box box 100, which they both open at the same time), she is guaranteed to never lose in this scenario.
+even boxes before Bob (with the small exception of box 100, which they both open at the same time), she is guaranteed to never lose in this scenario.
 
 If the highest numbered box that contains a present is odd, there are still plenty of scenarios in which Alice wins. Take, for example, the scenario where the two highest numbered boxes with presents in them are boxes 80 and 81. Alice reveals all 26 presents in 81 seconds, but it will take Bob 90 seconds to do the same (50 seconds to uncover all the odd boxes, and then 40 more seconds to uncover even boxes until he uncovers box 80).
 
