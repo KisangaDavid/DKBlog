@@ -2,7 +2,7 @@
 title: "Puzzle: 100 Prisoners and a Light Bulb"
 slug: 100-prisoners-1-lightbulb
 publishDate: September 12, 2026
-description: 100 prisoners are sentenced to life in prison in solitary confinement. Upon arrival at the prison, the warden proposes a deal...
+description: One hundred prisoners have been newly ushered into prison. The warden tells them that starting tomorrow, each of them...
 ---
 
 <style>
@@ -86,15 +86,12 @@ as well as toggle it if they wish. The prisoner also has the option of announcin
 they believes all prisoners have visited the interrogation room at some point in
 time. If this announcement is true, then all prisoners are set free, but if it is
 false, all prisoners are executed. The warden leaves, and the prisoners huddle 
-together to discuss their fate. Can they agree on a protocol that will guarantee their freedom?
+together to discuss their fate. Can they agree on a procedure that will guarantee their freedom in as short a time as possible?
 
 ## Solutions
 
-Solutions are presented in order of increasing efficiency / complexity. <br />
->  Note: This puzzle is quite a bit more famous than the puzzles I typically cover - if you're even slightly interested in logic puzzles, odds are that you've seen this one before. However, I've found that many sources present a serviceable, but unoptimal solution (i.e. solution #2 below). This is an absolute tragedy, as optimimizing the solution is where the real fun starts!
->
->
-<br /> <br />
+Solutions are presented in order of increasing optimality / complexity. 
+>Note: This puzzle is quite a bit more famous than the puzzles I typically cover - if you’re even slightly interested in logic puzzles, odds are that you’ve seen this one before. However, most sources I've come across present an unoptimal procedure (described in solution #2) as the answer. With a couple intuitive optimizations, we can do quite a bit better!
 
 ### Solution #1: Lucky Combinations
 and decide to act as follows:If the highest numbered box that contains a present is odd, there are still plenty of scenarios in which Alice wins. Take, for example, the scenario where the two highest numbered boxes with presents in them are boxes 80 and 81. Alice reveals all 26 presents in 81 seconds, but it will take Bob 90 seconds to do the same (50 seconds to uncover all the odd boxes, and then 40 more seconds to uncover even boxes until he uncovers box 80).
