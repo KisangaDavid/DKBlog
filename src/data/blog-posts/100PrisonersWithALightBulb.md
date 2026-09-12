@@ -95,20 +95,36 @@ together to discuss their fate. Can they agree on a procedure that will guarante
 Solutions are presented in order of increasing optimality / complexity. 
 >Note: This puzzle is quite a bit more famous than the puzzles I typically cover - if you’re even slightly interested in logic puzzles, odds are that you’ve seen this one before. However, most sources I've come across present an unoptimal procedure (described in solution #2) as the answer. With a couple intuitive optimizations, we can do quite a bit better!
 
-### Solution #1: Lucky Combinations
+### Solution #1: Lucky Chunks
 **Procedure**: The prisoners prearrange to track their time in prison in 100 day chunks. During their stay, they act as follows:
 - If it is a prisoner's first time visiting the interrogation room in a given 100 day chunk, do nothing.
-- if it is a prisoner's second time visiting the interrogation room in a given 100 day chunk, turn the lightbulb on.
+- If it is a prisoner's second time visiting the interrogation room in a given 100 day chunk, turn the lightbulb on.
 - On the last day of each 100 day chunk, if the light bulb is off, declare that every prisoner has visited the interrogation room. Otherwise, turn the lightbulb off.
 
 This procedure allows the prisoners to detect whether each person was brought to the interrogation room exactly once during a pre-determined 100 day chunk. If so, the light will remain off on the last day of the chunk. If any prisoner was selected more than once in the chunk, they turn the bulb on, signalling to the prisoner entering on the 100th day that there has been at least 1 repeat. That prisoner then turns the bulb off, and a new chunk of 100 days is tested. <br /> <br />
-Under this procedure, the expected number of days until the prisoners declare for freedom is calculated as follows: 
+The expected number of days until the prisoners are free under this procedure can be calculated as follows:
+
 $$
 \begin{align*}
-
+\mathbb{E}\left[\text{days until free}\right]
+    &= \mathbb{E}\left[\text{days per chunk} * \text{number of chunks taken}\right] \\
+    &= 100 * \mathbb{E}\left[\text{number of chunks taken}\right] && \text{(days per chunk is constant)} \\
+    &= 100 * \frac{1}{Pr(\text{a single chunk is successful})} && \text{(Expectation of a geometric random variable)} \\
+    &= 100 * \frac{1}{1 * 0.99 * 0.98 * 0.97 * ... * 0.01} \\
+    &= 100 * \frac{100^{100}}{100!} \\
+    &\approx 1.07 * 10^{44} \text{ days}
 \end{align*}
 $$
+Thus, the prisoners should to be free in roughly $1.07 * 10^{44}$ days. This is unfortunately many orders of magnitude higher the current age of the universe. Even if our prisoners were immortal, I doubt any of them would have the patience to commit to this strategy. Let's find something better! <br /> <br/>
+
 ### Solution #2: One Counting Prisoner
+
+**Procedure**: The prisoners prearrange to track their time in prison in 100 day chunks. During their stay, they act as follows:
+- If it is a prisoner's first time visiting the interrogation room in a given 100 day chunk, do nothing.
+- If it is a prisoner's second time visiting the interrogation room in a given 100 day chunk, turn the lightbulb on.
+- On the last day of each 100 day chunk, if the light bulb is off, declare that every prisoner has visited the interrogation room. Otherwise, turn the lightbulb off.
+
+
 The results can be validated with a quick simulation:
 ```py
 import random
@@ -158,7 +174,7 @@ print(
 )
 ```
 Output:
-> Avg: 10412 <br />
-> Min: 7418 <br />
-> Max: 14379 <br />
+> Avg: 10,412 <br />
+> Min: 7,418 <br />
+> Max: 14,379 <br />
 > Std Deviation: 998
