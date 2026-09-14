@@ -15,13 +15,18 @@ export default defineConfig({
     },
     remarkPlugins: [remarkGfm, remarkSmartypants, remarkMath],
     rehypePlugins: [
+       [
+        rehypeKatex,
+        {
+          trust: true,
+        }
+      ],
       [
         rehypeExternalLinks,
         {
           target: '_blank',
         },
-      ],
-      rehypeKatex
+      ] 
     ],
      stylesheets: [
     {
