@@ -228,6 +228,15 @@ Output:
 
 The simulations back up our calculations! Using this procedure the prisoners should expect to be free in around $10{,}419$ days, or just over $28.5$ years. This is much more reasonable than solution #$1$, but we can still do better!
 <br /> <br />
-### Solution #3: PLACEHOLDER
-**Procedure**:
-PLACEHOLDER
+### Solution #3: Staged Counter Selection
+
+**Procedure**: 
+The prisoners prearrange to split their time in prison into two stages: stage $1$ will last for $100$ days, and stage $2$ will last until the prisoners are free. They then act as follows: <br />
+- Stage $1$:
+  - If a prisoner enters the interrogation room for the first time and the lightbulb is off, they consider themselves "counted." They are forbidden from turning the lightbulb on in the second stage.
+  - If a prisoner enters the interrogation room for the second time and the lightbulb is off, they turn it on, designate themselves as "the counter," and set their internal count to the current day - $1$.
+  - If a prisoner enters the interrogation room for the first time on day $100$ and the lightbulb is off, they immediately declare that all prisoners have visited the room. <br />
+- Stage $2$:
+  - The prisoners act identically to the *One Counter* solution, with the exception that the "counted" prisoners from above are never allowed to turn the lightbulb on.
+
+To show intuitively why this procedure works, let's define $k$ as the first day a prisoner enters the interrogation room for the second time during stage $1$. The prisoner entering on day $k$ will know that they're the first repeat visitor because the lightbulb will still be off. They therefore also know that the number of unique visitors so far is exactly $k - 1$. If this prisoner is assigned the role of counter, and the already-counted prisoners are not allowed to touch the lightbulb in the $2$nd stage, then the counter only needs to count $100 - (k - 1)$ other prisoners during stage $2$ to have full confidence that all prisoners have visited the interrogation room.
