@@ -99,9 +99,16 @@ together to discuss their fate. Can they agree on a procedure that will guarante
 ## Solutions
 
 Solutions are presented in order of increasing optimality / complexity. 
+
+[Solution #1: Lucky Chunks](#solution-1-lucky-chunks) <br />
+[Solution #2: One Counting Prisoner](#solution-2-one-counting-prisoner) <br />
+[Solution #3: Staged Counter Selection](#solution-3-staged-counter-selection) <br />
+[Solution #4: Multiple Counters](#solution-4-multiple-counters)
 >Note: This puzzle is quite a bit more famous than the puzzles I typically cover - if you’re even slightly interested in logic puzzles, odds are that you’ve seen this one before. However, most sources I've come across present an unoptimal procedure (described in solution #2) as the answer. With a couple intuitive optimizations, we can do quite a bit better!
 
-### Solution #1: Lucky Chunks
+
+
+### Solution 1: Lucky Chunks
 **Procedure**: The prisoners prearrange to track their time in prison in 100 day chunks. During their stay, they act as follows:
 - If it is a prisoner's first time visiting the interrogation room in a given 100 day chunk, do nothing.
 - If it is a prisoner's second time visiting the interrogation room in a given 100 day chunk, turn the lightbulb on.
@@ -114,17 +121,17 @@ The expected number of days until the prisoners are free, denoted as $\mathbb{E}
 $$
 \begin{align*}
 \mathbb{E}[\text{X}]
-    &= \mathbb{E}\left[\text{days per chunk} * \text{number of chunks taken}\right] \\
-    &= 100 * \mathbb{E}\left[\text{number of chunks taken}\right] && \text{(days per chunk is constant)} \\
-    &= 100 * \frac{1}{Pr(\text{a single chunk is successful})} && \text{(expectation of a geometric random variable)} \\
-    &= 100 * \frac{1}{1 * 0.99 * 0.98 * 0.97 * ... * 0.01} \\
-    &= 100 * \frac{100^{100}}{100!} \\
+    &= \mathbb{E}\left[\text{days per chunk} * \text{number of chunks taken}\right] \\[0.3em]
+    &= 100 \cdot \mathbb{E}\left[\text{number of chunks taken}\right] && \text{(days per chunk is constant)} \\[0.3em]
+    &= 100 \cdot \frac{1}{Pr(\text{a single chunk is successful})} && \text{(expectation of a geometric random variable)} \\[0.8em]
+    &= 100 \cdot \frac{1}{1 * 0.99 * 0.98 * 0.97 * \cdots * 0.01} \\[0.8em]
+    &= \frac{100^{101}}{100!} \\[0.8em]
     &\approx 1.07 * 10^{44} \text{ days}
 \end{align*}
 $$
 Thus, the prisoners should expect to be free in roughly $1.07 * 10^{44}$ days. This is unfortunately many orders of magnitude higher the current age of the universe. Even if our prisoners were immortal, I doubt any of them would have the patience to commit to this strategy. Let's find something better for them! <br /> <br/>
 
-### Solution #2: One Counting Prisoner
+### Solution 2: One Counting Prisoner
 
 **Procedure**: 
 - The first prisoner to visit the interrogation room is designated "the counter." They keep an internal count in their head, initialized to 1.
@@ -149,11 +156,11 @@ $$
  (1) \quad &\mathbb{E}\left[Z_i\right]
     = \frac{1}{\text{PZ}_{i}}
     = \frac{1}{\frac{100-i}{100}} 
-    = \frac{100}{100 - i} && (\text{expectation of a geometric random variable}) \\
+    = \frac{100}{100 - i} && (\text{expectation of a geometric random variable}) \\[1em]
  (2) \quad &\mathbb{E}\left[W_i\right]
     = \frac{1}{\text{PW}_{i}}
     = \frac{1}{\frac{1}{100}} 
-    = 100 && (\text{expectation of a geometric random variable}) \\
+    = 100 && (\text{expectation of a geometric random variable}) \\[1em]
 \end{align*}
 $$
 
@@ -162,18 +169,16 @@ With the above, we can now calculate $\mathbb{E}[X]$:
 $$
 \begin{align*}
 \mathbb{E}\left[X\right]
-    &= 1 + \mathbb{E}\left[\sum_{i=1}^{99}Y_i\right] \\
-    &= 1 + \mathbb{E}\left[\sum_{i=1}^{99}\left(Z_i + W_i\right)\right] \\
-    &= 1 + \sum_{i=1}^{99}\left(\mathbb{E}\left[Z_i\right]\right) +\sum_{i=1}^{99}\left(\mathbb{E}\left[W_i\right]\right) && \text{(linearity of expectation)}\\
-    &= 1 + \sum_{i=1}^{99}\left(\frac{100}{100-i}\right) +\sum_{i=1}^{99}100 && \text{(using equations 1 and 2 from above)}\\
-    &= 1 + 100 \sum_{j=1}^{99}\left(\frac{1}{j}\right) + 9{,}900 && \text{(substituting $j$ for $100 - i$)}\\
-    &= 1 + 100 * H_{99} + 9{,}900 && \text{(\href{https://en.wikipedia.org/wiki/Harmonic_number}{harmonic number} shorthand)}\\
-    &\approx 1 + 100 * 5.177 + 9{,}900 && \text{(known value of the $99th$ harmonic number)}\\
+    &= 1 + \mathbb{E}\left[\sum_{i=1}^{99}Y_i\right] \\[0.8em]
+    &= 1 + \mathbb{E}\left[\sum_{i=1}^{99}\left(Z_i + W_i\right)\right] \\[0.8em]
+    &= 1 + \sum_{i=1}^{99}\left(\mathbb{E}\left[Z_i\right]\right) +\sum_{i=1}^{99}\left(\mathbb{E}\left[W_i\right]\right) && \text{(linearity of expectation)}\\[0.8em]
+    &= 1 + \sum_{i=1}^{99}\left(\frac{100}{100-i}\right) +\sum_{i=1}^{99}100 && \text{(using equations 1 and 2 from above)}\\[0.8em]
+    &= 1 + 100 \sum_{j=1}^{99}\left(\frac{1}{j}\right) + 9{,}900 && \text{(substituting $j$ for $100 - i$)}\\[0.8em]
+    &= 1 + 100 * H_{99} + 9{,}900 && \text{(\href{https://en.wikipedia.org/wiki/Harmonic_number}{harmonic number} shorthand)}\\[0.3em]
+    &\approx 1 + 100 * 5.177 + 9{,}900 && \text{(known value of the $99th$ harmonic number)}\\[0.3em]
     &\approx 10{,}419 \text{ days}
 \end{align*}
 $$
-
-<br />
 
 **Simulating the Procedure:** <br />
 ```py
@@ -229,7 +234,8 @@ Output:
 
 The simulations back up our calculations! Using this procedure the prisoners should expect to be free in around $10{,}419$ days, or just over $28.5$ years. This is much more reasonable than solution #$1$, but we can still do better!
 <br /> <br />
-### Solution #3: Staged Counter Selection
+
+### Solution 3: Staged Counter Selection
 
 **Procedure**: 
 The prisoners prearrange to split their time in prison into two stages: stage $1$ will last for $100$ days, and stage $2$ will last until the prisoners are free. They then act as follows: <br />
@@ -258,11 +264,11 @@ Notice that in order for the first repeat visit to happen on day $K$, the previo
 $$
 \begin{align*}
 (4) \quad Pr(K=k)
-    &= Pr\left(\text{No duplicate visits in {k - 1} days}\right) \cdot Pr\left(\text{Duplicate visit on {k}th day}\right) \\
-    &= \left(\frac{100}{100} \cdot \frac{99}{100} \cdot \frac{98}{100} \cdots \frac{(100 - (k - 2))}{100}\right) \left(\frac{k - 1}{100}\right) \\
-    &= \left(\frac{100 \cdot 99 \cdot 98 \cdots (100 - (k - 2))}{100^{k - 1}}\right) \left(\frac{k - 1}{100}\right) \\
-    &= \left(\frac{100 \cdot 99 \cdot 98 \cdots (102 - k)}{100^{k}}\right) \left(k - 1\right) \\
-    &= \left(\frac{\frac{100!}{(101 - k)!}}{100^k}\right)\left(k - 1\right) \hspace{8em} (\text{factorial form of a falling power}) \\
+    &= Pr\left(\text{No duplicate visits in {k - 1} days}\right) \cdot Pr\left(\text{Duplicate visit on {k}th day}\right) \\[0.3em]
+    &= \left(\frac{100}{100} \cdot \frac{99}{100} \cdot \frac{98}{100} \cdots \frac{(100 - (k - 2))}{100}\right) \left(\frac{k - 1}{100}\right) \\[1em]
+    &= \left(\frac{100 \cdot 99 \cdot 98 \cdots (100 - (k - 2))}{100^{k - 1}}\right) \left(\frac{k - 1}{100}\right) \\[1em]
+    &= \left(\frac{100 \cdot 99 \cdot 98 \cdots (102 - k)}{100^{k}}\right) \left(k - 1\right) \\[1em]
+    &= \left(\frac{\frac{100!}{(101 - k)!}}{100^k}\right)\left(k - 1\right) \hspace{8em} (\text{factorial form of a falling power}) \\[1em]
     &= \frac{(k - 1)(100!)}{(100^k)(101 - k)!}
 \end{align*}
 $$
@@ -270,9 +276,9 @@ $$
 By the law of total probability, the sum of $Pr(K=k)$ over all possible values of $k$ must equal $1$. We can use this fact to derive the following, which will come in handy during the final calculation of $\mathbb{E}\left[X\right]$:
 $$
 \begin{align*}
-\quad 1 &= \sum_{k=2}^{101} \frac{(k - 1)(100!)}{(100^k)(101 - k)!} &&\implies &&(\text{multiply both sides by $100$})\\  
-100 &= 100\sum_{k=2}^{101} \frac{(k - 1)(100!)}{(100^k)(101 - k)!} &&\implies &&(\text{simplify}) \\ 
-100 &= \sum_{k=2}^{101} \frac{(k - 1)(100!)}{(100^{k-1})(101 - k)!} &&\implies &&(\text{substitute $j$ for $k - 1$}) \\
+\quad 1 &= \sum_{k=2}^{101} \frac{(k - 1)(100!)}{(100^k)(101 - k)!} &&\implies &&(\text{multiply both sides by $100$})\\[1em] 
+100 &= 100\sum_{k=2}^{101} \frac{(k - 1)(100!)}{(100^k)(101 - k)!} &&\implies &&(\text{simplify}) \\[1em] 
+100 &= \sum_{k=2}^{101} \frac{(k - 1)(100!)}{(100^{k-1})(101 - k)!} &&\implies &&(\text{substitute $j$ for $k - 1$}) \\[1em]
 (5) \quad \quad 100 &= \sum_{j=1}^{100} \frac{j(100!)}{(100^{j})(100 - j)!}
 \end{align*}
 $$
@@ -282,32 +288,75 @@ The calculation of $\mathbb{E}\left[X|K=k\right]$ is similar to the calculation 
 $$
 \begin{align*}
 (6) \quad \mathbb{E}\left[X | K = k\right]
-    &= 100 + \mathbb{E}\left[\sum_{i=k - 1}^{99}Y_i\right] \\
-    &= 100 + \mathbb{E}\left[\sum_{i=k - 1}^{99}\left(Z_i + W_i\right)\right] \\
-    &= 100 + \sum_{i=k - 1}^{99}\left(\mathbb{E}\left[Z_i\right]\right) +\sum_{i=k-1}^{99}\left(\mathbb{E}\left[W_i\right]\right) && \text{(linearity of expectation)}\\
-    &= 100 + \sum_{i=k-1}^{99}\left(\frac{100}{100-i}\right) +\sum_{i=k-1}^{99}100 && \text{(using equations (1) and (2))}\\
-    &= 100 + 100 \sum_{j=1}^{101-k}\left(\frac{1}{j}\right) + 100 (101-k) && \text{(substituting $j$ for $100 - i$)}\\
-    &= 100 + 100(H_{101 - k}) + 100(101 - k) && \text{(\href{https://en.wikipedia.org/wiki/Harmonic_number}{harmonic number} shorthand)}\\
+    &= 100 + \mathbb{E}\left[\sum_{i=k - 1}^{99}Y_i\right] \\[1em] 
+    &= 100 + \mathbb{E}\left[\sum_{i=k - 1}^{99}\left(Z_i + W_i\right)\right] \\[1em] 
+    &= 100 + \sum_{i=k - 1}^{99}\left(\mathbb{E}\left[Z_i\right]\right) +\sum_{i=k-1}^{99}\left(\mathbb{E}\left[W_i\right]\right) && \text{(linearity of expectation)}\\[1em] 
+    &= 100 + \sum_{i=k-1}^{99}\left(\frac{100}{100-i}\right) +\sum_{i=k-1}^{99}100 && \text{(using equations (1) and (2))}\\[1em] 
+    &= 100 + 100 \sum_{j=1}^{101-k}\left(\frac{1}{j}\right) + 100 (101-k) && \text{(substituting $j$ for $100 - i$)}\\[1em] 
+    &= 100 + 100(H_{101 - k}) + 100(101 - k) && \text{(\href{https://en.wikipedia.org/wiki/Harmonic_number}{harmonic number} shorthand)}\\[1em] 
     &= 100(H_{101 - k} - k + 102)
 \end{align*}
 $$
 
 
-With all of the above, we are finally ready to calculate $\mathbb{E}[X]$:
+With all of the above, we can finally begin to calculate $\mathbb{E}[X]$:
 
 $$
 \begin{align*}
-\quad \mathbb{E}\left[X\right]
+(7) \quad \mathbb{E}\left[X\right]
       &= \sum_{k=2}^{101}Pr\left(K=k\right)\mathbb{E}\left[X | K=k\right] \\
-      &= \sum_{k=2}^{101}\frac{(k - 1)(100!)}{(100^k)(101 - k)!}  (100(H_{101 - k} - k + 102))  \hspace{4em} \text{(substitutions using equations $4$ and 6)} \\
-      &= \sum_{k=2}^{101}\frac{(k - 1)(100!)}{(100^{k - 1})(101 - k)!}  (H_{101 - k} - k + 102)  \\
-      &= \sum_{j=1}^{100}\frac{(j)(100!)}{(100^{j})(100 - j)!}  (H_{100 - j} - j + 101) \hspace{6.5em} \text{(substituting $j$ for $k - 1$)} \\
-      &= \sum_{j=1}^{100}\left(\frac{(j)(100!)}{(100^{j})(100 - j)!}  (H_{100 - j} - j)\right) + 101\sum_{j=1}^{100}\left(\frac{(j)(100!)}{(100^{j})(100 - j)!}\right) \\
-           &= \sum_{j=1}^{100}\left(\frac{(j)(100!)}{(100^{j})(100 - j)!}  (H_{100 - j} - j)\right) + 101 \cdot 100 \hspace{2.8em} \text{(substitution using equation 5)} \\
-      &= 10{,}100 + \sum_{j=1}^{100}\left(\frac{(j)(100!)}{(100^{j})(100 - j)!}  (H_{100 - j} - j)\right) \\
-      &\approx 9{,}384 \text{ days}
+      &= \sum_{k=2}^{101}\frac{(k - 1)(100!)}{(100^k)(101 - k)!}  (100(H_{101 - k} - k + 102))  \hspace{4em} \text{(substitutions using equations $4$ and 6)} \\[1em] 
+      &= \sum_{k=2}^{101}\frac{(k - 1)(100!)}{(100^{k - 1})(101 - k)!}  (H_{101 - k} - k + 102)  \\[1em] 
+      &= \sum_{j=1}^{100}\frac{(j)(100!)}{(100^{j})(100 - j)!}  (H_{100 - j} - j + 101) \hspace{6.5em} \text{(substituting $j$ for $k - 1$)} \\[1em] 
+      &= \sum_{j=1}^{100}\left(\frac{(j)(100!)}{(100^{j})(100 - j)!}  (H_{100 - j} - j)\right) + 101\sum_{j=1}^{100}\left(\frac{(j)(100!)}{(100^{j})(100 - j)!}\right) \\[1em] 
+           &= \sum_{j=1}^{100}\left(\frac{(j)(100!)}{(100^{j})(100 - j)!}  (H_{100 - j} - j)\right) + 101 \cdot 100 \hspace{2.8em} \text{(substitution using equation 5)} \\[1em] 
+       \qquad &= 10{,}100 + \sum_{j=1}^{100}\left(\frac{(j)(100!)}{(100^{j})(100 - j)!}  (H_{100 - j} - j)\right) \\[1em] 
 \end{align*}
 $$ 
+All that work and the form is still so messy 😢. Let's define / derive a couple more terms that will allow us to simplify further:
+$$
+\begin{align*}
+&(8) \quad &&a_j = \frac{100!}{(100^j)(100-j)!}  \\[1em] 
+&(9) \quad &&a_{j + 1} = \frac{100!}{(100^{j + 1})(99-j)!} = a_j\left(\frac{100-j}{100}\right) \\[1em] 
+&(10) \quad &&a_j - a_{j + 1} = a_j - a_j\left(\frac{100-j}{100}\right) = j\left(\frac{a_j}{100}\right) \\[1em] 
+&(11) \quad &&a_j - a_{j + 1} = a_j - a_j\left(\frac{100-j}{100}\right) \implies  \\[1em] 
+\quad & &&a_{j - 1} - a_{j} = a_{j - 1} - a_{j - 1}\left(\frac{101-j}{100}\right) \implies  \\[0.5em] 
+\quad & && a_{j} = a_{j - 1}\left(\frac{101-j}{100}\right) \implies  \\[1em] 
+\quad & && \frac{a_{j}}{101-j} = \frac{a_{j - 1}}{100}  \\[1.5em]
+&(12) \quad &&j(a_j) = 100(a_j - a_{j + 1})  \\[0.5em] 
+&(13) \quad &&b_j = H_{100-j} - j  \\[0.5em] 
+&(14) \quad &&b_{j - 1} = H_{101-j} - j + 1  \\[0.5em] 
+&(15) \quad &&b_j - b_{j - 1} =  H_{100-j} - j - (H_{101-j} - j + 1) = - \frac{1}{101-j}- 1 \\[0.5em] 
+\end{align*}
+$$ 
+
+
+Starting back where we left off:
+$$
+\begin{align*}
+\quad \mathbb{E}\left[X\right]
+&= 10{,}100 + \sum_{j=1}^{100}\left(\frac{(j)(100!)}{(100^{j})(100 - j)!}  (H_{100 - j} - j)\right) \\[1em] 
+&= 10{,}100 + \sum_{j=1}^{100}j(a_j)(b_j) &&\text{(using equations $8$ and $12$)} \\[1em] 
+&= 10{,}100 + 100\sum_{j=1}^{100}(a_j - a_{j + 1})(b_j) &&\text{(using equation $11$)} \\[1em] 
+&= 10{,}100 + 100\left(\sum_{j=1}^{100}(a_j)(b_j) - \sum_{j=1}^{100}(a_{j + 1})(b_j) \right) \\[1em] 
+&= 10{,}100 + 100\left(\sum_{j=1}^{100}(a_j)(b_j) - \sum_{k=2}^{101}(a_{k})(b_{k - 1}) \right) &&\text{(substitute $k = j + 1$ in the second sum)} \\[1em] 
+&= 10{,}100 + 100\left((a_1)(b_1) - (a_{101})(b_{100}) + \sum_{j=2}^{100}(a_j)(b_j - b_{j - 1})   \right) \\[1em] 
+&= 10{,}100 + 100\left(H_{99} - 1 + \frac{100!}{100^{100}} + \sum_{j=2}^{100}(a_j)(b_j - b_{j - 1})   \right) \\[1em] 
+&= 10{,}100 + 100\left(H_{99} - 1 + \frac{100!}{100^{100}} + \sum_{j=2}^{100}(a_j)\left(- \frac{1}{101-j}- 1\right)\right) &&\text{(substitution using equation 15)}\\[1em] 
+&= 10{,}100 + 100\left(H_{99} - 1 + \frac{100!}{100^{100}} + \sum_{j=2}^{100}- \frac{a_j}{101-j}- \sum_{j=2}^{100}(a_j)\right) \\[1em] 
+&= 10{,}100 + 100\left(H_{99} - 1 + \frac{100!}{100^{100}} + \sum_{j=2}^{100}- \frac{a_{j - 1}}{100}- \sum_{j=2}^{100}(a_j)\right) &&\text{(substitution using equation 11)}\\[1em] 
+&= 10{,}100 + 100\left(H_{99} - 1 + \frac{100!}{100^{100}} - \frac{1}{100}\sum_{j=2}^{100} a_{j - 1}- \sum_{j=2}^{100}(a_j)\right) \\[1em] 
+&= 10{,}100 + 100\left(H_{99} - 1 + \frac{100!}{100^{100}} - \frac{1}{100}\sum_{j=1}^{99} a_{j}- \sum_{j=2}^{100}(a_j)\right) \\[1em] 
+&= 10{,}100 + 100\left(H_{99} - 1 + \frac{100!}{100^{100}} - \frac{101}{100}\sum_{j=2}^{99}\left(a_{j}\right) -\frac{a_1}{100} - a_{100}\right) \\[1em] 
+&= 10{,}100 + 100\left(H_{99} - 1 + \frac{100!}{100^{100}} -\frac{a_1}{100} - a_{100} - \frac{101}{100}\sum_{j=2}^{99}\left(a_{j}\right) \right) \\[1em] 
+% SOLID UP TO HERE
+&\approx 10{,}100 + 100\left(4.167 - \frac{101}{100}\sum_{j=2}^{99}\left(a_{j}\right)   \right) \\[1em] 
+&\approx 10{,}517 - 101 \left(\sum_{j=2}^{99}\frac{100!}{(100^j)(100-j)!}   \right) \\
+&\approx 9{,}385 \text{ days}
+\end{align*}
+$$ 
+
+
 
 **Simulating the Procedure:**
 ```py
@@ -371,5 +420,8 @@ Output:
 > Max: 13,734 <br />
 > Mean Standard Error: 11.3
 
+The simulation once again matches up with our calculations 😊. Using this procedure, the prisoners should expect to be free in $9{,}384$ days, or roughly $25.7$ years. We were able to shave almost three years off the standard one counter solution! <br /> <br />
 
-### Solution #4: Multiple Counters
+### Solution 4: Multiple Counters
+
+**Procedure:**
