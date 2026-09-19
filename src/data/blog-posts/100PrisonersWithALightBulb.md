@@ -88,33 +88,31 @@ pre {
 One hundred prisoners have been newly ushered into prison. The warden tells
 them that starting tomorrow, each of them will be placed in an isolated cell,
 unable to communicate with each other. Each day, the warden will choose
-one of the prisoners uniformly at random and bring them to
-an interrogation room containing only a single light bulb, which is initially switched off.
+a random prisoner and bring them to
+a room containing only a single light bulb.
 The prisoner will be able to observe the current state of the light bulb, 
-as well as toggle it if they wish. The prisoner also has the option of announcing that
-they believe all prisoners have visited the interrogation room at some point in
-time. If the announcement is true, then all prisoners are set free. however, if it is false, then all the prisoners are executed. The warden leaves, and the prisoners huddle 
+as well as toggle it if they wish. The warden will never touch the lightbulb, and its initial state on day 1 is off. The prisoner also has the option of announcing that
+all prisoners have visited the room at some point in
+time. If the announcement is true, then all prisoners are set free. However, if it is false, then all the prisoners are executed. The warden leaves, and the prisoners huddle 
 together to discuss their fate. Can they agree on a procedure that will guarantee their freedom in as short a time as possible?
+> Note: Everyone I've talked to who was familiar with this puzzle had only ever heard of solution #2. However, there exist much better solutions, which will be proven below!
 
 ## Solutions
 
-Solutions are presented in order of increasing optimality / complexity. 
+Solutions are presented in order of increasing complexity. 
 
 [Solution #1: Lucky Chunks](#solution-1-lucky-chunks) <br />
 [Solution #2: One Counting Prisoner](#solution-2-one-counting-prisoner) <br />
 [Solution #3: Staged Counter Selection](#solution-3-staged-counter-selection) <br />
-[Solution #4: Multiple Counters](#solution-4-multiple-counters)
->Note: This puzzle is quite a bit more famous than the puzzles I typically cover - if you’re even slightly interested in logic puzzles, odds are that you’ve seen this one before. However, most sources I've come across present an unoptimal procedure (described in solution #2) as the answer. With a couple intuitive optimizations, we can do quite a bit better!
-
-
+[Solution #4: Multiple Counters](#solution-4-multiple-counters) <br /> <br />
 
 ### Solution 1: Lucky Chunks
 **Procedure**: The prisoners prearrange to track their time in prison in 100 day chunks. During their stay, they act as follows:
-- If it is a prisoner's first time visiting the interrogation room in a given 100 day chunk, do nothing.
-- If it is a prisoner's second time visiting the interrogation room in a given 100 day chunk, turn the lightbulb on.
-- On the last day of each 100 day chunk, if the light bulb is off, declare that every prisoner has visited the interrogation room. Otherwise, turn the lightbulb off.
+- If it is a prisoner's first time visiting the room in a given 100 day chunk, do nothing.
+- If it is a prisoner's second time visiting the room in a given 100 day chunk, turn the lightbulb on.
+- On the last day of each 100 day chunk, if the light bulb is off, declare that every prisoner has visited the room. Otherwise, turn the lightbulb off.
 
-This procedure allows the prisoners to detect whether each person was brought to the interrogation room exactly once during a pre-determined 100 day chunk. If so, the light will remain off on the last day of the chunk. If any prisoner was selected more than once in the chunk, they turn the bulb on, signalling to the prisoner entering on the 100th day that there has been at least 1 repeat. That prisoner then turns the bulb off, and a new chunk of 100 days is tested. <br /> <br />
+This procedure allows the prisoners to detect whether each person was brought to the room exactly once during a pre-determined 100 day chunk. If so, the light will remain off on the last day of the chunk. If any prisoner was selected more than once in the chunk, they turn the bulb on, signalling to the prisoner entering on the 100th day that there has been at least 1 repeat. That prisoner then turns the bulb off, and a new chunk of 100 days is tested. <br /> <br />
 **Expected Runtime:** <br />
 The expected number of days until the prisoners are free, denoted as $\mathbb{E}[X]$, can be calculated as follows:
 
@@ -134,12 +132,12 @@ Thus, the prisoners should expect to be free in roughly $1.07 * 10^{44}$ days. T
 ### Solution 2: One Counting Prisoner
 
 **Procedure**: 
-- The first prisoner to visit the interrogation room is designated "the counter." They keep an internal count in their head, initialized to 1.
+- The first prisoner to visit the room is designated "the counter." They keep an internal count in their head, initialized to 1.
 - If a non-counter sees an off lightbulb and they have never switched the lightbulb on before, they switch it on.
 - If the counter sees an on lightbulb, they increment their internal count and switch the lightbulb off.
-- Once the counter's internal count reaches 100, they declare that all prisoners have visited the interrogation room.
+- Once the counter's internal count reaches 100, they declare that all prisoners have visited the room.
 
-Under this procedure, every prisoner except for the counter switches the lightbulb on exactly once. The counter's internal count tracks precisely $1$ + the number of times the lightbulb has been switched on, which forms a strict lower bound for the number of unique prisoners that have visited the interrogation cell. Thus, when the count reaches 100, the counter may declare with full confidence that all prisoners have visited the interrogation cell at least once.
+Under this procedure, every prisoner except for the counter switches the lightbulb on exactly once. The counter's internal count tracks precisely $1$ + the number of times the lightbulb has been switched on, which forms a strict lower bound for the number of unique prisoners that have visited the room. Thus, when the count reaches 100, the counter may declare with full confidence that all prisoners have visited the room at least once.
 
 **Expected Runtime:** <br />
 To determine the expected number of days until the prisoners are free, first lets define a couple useful random variables and probabilities:
@@ -150,14 +148,15 @@ To determine the expected number of days until the prisoners are free, first let
 > W<sub>i</sub> - Number of days for the counter to be brought in at count i <br />
 > PW<sub>i</sub> - Daily probability that the counter is brought in at count i <br />
 
-Now let's find closed-form solutions for $\mathbb{E}\left[Z_i\right]$ and $\mathbb{E}\left[W_i\right]$:
+Notice that for the counter to count from $i$ to $i + 1$, two things must happen: a prisoner who hasn't yet toggled the light must be selected, and then the counter must be selected. Thus, $Y_i = Z_i + W_i$. Let's mark this down, and derive the expected values for $Z_i$ and $W_i$:
 $$
 \begin{align*}
- (1) \quad &\mathbb{E}\left[Z_i\right]
+(1) \quad &Y_i = Z_i + W_i \\[1em]
+(2) \quad &\mathbb{E}\left[Z_i\right]
     = \frac{1}{\text{PZ}_{i}}
     = \frac{1}{\frac{100-i}{100}} 
     = \frac{100}{100 - i} && (\text{expectation of a geometric random variable}) \\[1em]
- (2) \quad &\mathbb{E}\left[W_i\right]
+(3) \quad &\mathbb{E}\left[W_i\right]
     = \frac{1}{\text{PW}_{i}}
     = \frac{1}{\frac{1}{100}} 
     = 100 && (\text{expectation of a geometric random variable}) \\[1em]
@@ -169,13 +168,13 @@ With the above, we can now calculate $\mathbb{E}[X]$:
 $$
 \begin{align*}
 \mathbb{E}\left[X\right]
-    &= 1 + \mathbb{E}\left[\sum_{i=1}^{99}Y_i\right] \\[0.8em]
-    &= 1 + \mathbb{E}\left[\sum_{i=1}^{99}\left(Z_i + W_i\right)\right] \\[0.8em]
+    &= 1 + \mathbb{E}\left[\sum_{i=1}^{99}Y_i\right] \\[0.8em] 
+    &= 1 + \mathbb{E}\left[\sum_{i=1}^{99}\left(Z_i + W_i\right)\right]  && \text{(using equation 1)}\\[0.8em]
     &= 1 + \sum_{i=1}^{99}\left(\mathbb{E}\left[Z_i\right]\right) +\sum_{i=1}^{99}\left(\mathbb{E}\left[W_i\right]\right) && \text{(linearity of expectation)}\\[0.8em]
-    &= 1 + \sum_{i=1}^{99}\left(\frac{100}{100-i}\right) +\sum_{i=1}^{99}100 && \text{(using equations 1 and 2 from above)}\\[0.8em]
+    &= 1 + \sum_{i=1}^{99}\left(\frac{100}{100-i}\right) +\sum_{i=1}^{99}100 && \text{(using equations 2 and 3)}\\[0.8em]
     &= 1 + 100 \sum_{j=1}^{99}\left(\frac{1}{j}\right) + 9{,}900 && \text{(substituting $j$ for $100 - i$)}\\[0.8em]
-    &= 1 + 100 * H_{99} + 9{,}900 && \text{(\href{https://en.wikipedia.org/wiki/Harmonic_number}{harmonic number} shorthand)}\\[0.3em]
-    &\approx 1 + 100 * 5.177 + 9{,}900 && \text{(known value of the $99th$ harmonic number)}\\[0.3em]
+    &= 1 + 100H_{99} + 9{,}900 && \text{(\href{https://en.wikipedia.org/wiki/Harmonic_number}{harmonic number} shorthand)}\\[0.3em]
+    &\approx 1 + 100\cdot 5.177 + 9{,}900 && \text{(known value of the $99th$ harmonic number)}\\[0.3em]
     &\approx 10{,}419 \text{ days}
 \end{align*}
 $$
@@ -240,13 +239,13 @@ The simulations back up our calculations! Using this procedure the prisoners sho
 **Procedure**: 
 The prisoners prearrange to split their time in prison into two stages: stage $1$ will last for $100$ days, and stage $2$ will last until the prisoners are free. They then act as follows: <br />
 - Stage $1$:
-  - If a prisoner enters the interrogation room for the first time and the lightbulb is off, they consider themselves "counted." They are forbidden from turning the lightbulb on in the second stage.
-  - If a prisoner enters the interrogation room for the second time and the lightbulb is off, they turn it on, designate themselves as "the counter," and set their internal count to the current day - $1$.
-  - If a prisoner enters the interrogation room for the first time on day $100$ and the lightbulb is off, they immediately declare that all prisoners have visited the room. <br />
+  - If a prisoner enters the room for the first time and the lightbulb is off, they consider themselves "counted." They are forbidden from turning the lightbulb on in the second stage.
+  - If a prisoner enters the room for the second time and the lightbulb is off, they turn it on, designate themselves as "the counter," and set their internal count to the current day - $1$.
+  - If a prisoner enters the room for the first time on day $100$ and the lightbulb is off, they immediately declare that all prisoners have visited the room. <br />
 - Stage $2$:
   - The prisoners act identically to the *One Counter* solution, with the exception that the "counted" prisoners from above are never allowed to turn the lightbulb on.
 
-To show intuitively why this procedure works, let's define $K$ as the first day a prisoner enters the interrogation room for the second time during stage $1$. The prisoner entering on day $K$ will know that they're the first repeat visitor because the lightbulb will still be off. They therefore also know that the number of unique visitors so far is exactly $K - 1$. If this prisoner is assigned the role of counter, and the already-counted prisoners are not allowed to touch the lightbulb in the $2$nd stage, then the counter only needs to count $100 - (K - 1)$ other prisoners during stage $2$ to have full confidence that all prisoners have visited the interrogation room.
+To show intuitively why this procedure works, let's define $K$ as the first day a prisoner enters the room for the second time during stage $1$. The prisoner entering on day $K$ will know that they're the first repeat visitor because the lightbulb will still be off. They therefore also know that the number of unique visitors so far is exactly $K - 1$. If this prisoner is assigned the role of counter, and the already-counted prisoners are not allowed to touch the lightbulb in the $2$nd stage, then the counter only needs to count $100 - (K - 1)$ other prisoners during stage $2$ to have full confidence that all prisoners have visited the room.
 <br />
 
 **Expected Runtime:** <br />
@@ -254,7 +253,7 @@ We can calculate the expected runtime of this procedure by taking the weighted a
 
 $$
 \begin{align*}
-(3) \quad \mathbb{E}\left[X\right]
+(4) \quad \mathbb{E}\left[X\right]
       &= \sum_{k=2}^{101}Pr\left(K=k\right)\mathbb{E}\left[X | K=k\right] \\
 \end{align*}
 $$
@@ -263,7 +262,7 @@ Notice that in order for the first repeat visit to happen on day $K$, the previo
 
 $$
 \begin{align*}
-(4) \quad Pr(K=k)
+(5) \quad Pr(K=k)
     &= Pr\left(\text{No duplicate visits in {k - 1} days}\right) \cdot Pr\left(\text{Duplicate visit on {k}th day}\right) \\[0.3em]
     &= \left(\frac{100}{100} \cdot \frac{99}{100} \cdot \frac{98}{100} \cdots \frac{(100 - (k - 2))}{100}\right) \left(\frac{k - 1}{100}\right) \\[1em]
     &= \left(\frac{100 \cdot 99 \cdot 98 \cdots (100 - (k - 2))}{100^{k - 1}}\right) \left(\frac{k - 1}{100}\right) \\[1em]
@@ -279,7 +278,7 @@ $$
 \quad 1 &= \sum_{k=2}^{101} \frac{(k - 1)(100!)}{(100^k)(101 - k)!} &&\implies &&(\text{multiply both sides by $100$})\\[1em] 
 100 &= 100\sum_{k=2}^{101} \frac{(k - 1)(100!)}{(100^k)(101 - k)!} &&\implies &&(\text{simplify}) \\[1em] 
 100 &= \sum_{k=2}^{101} \frac{(k - 1)(100!)}{(100^{k-1})(101 - k)!} &&\implies &&(\text{substitute $j$ for $k - 1$}) \\[1em]
-(5) \quad \quad 100 &= \sum_{j=1}^{100} \frac{j(100!)}{(100^{j})(100 - j)!}
+(6) \quad \quad 100 &= \sum_{j=1}^{100} \frac{j(100!)}{(100^{j})(100 - j)!}
 \end{align*}
 $$
 
@@ -287,11 +286,11 @@ The calculation of $\mathbb{E}\left[X|K=k\right]$ is similar to the calculation 
 
 $$
 \begin{align*}
-(6) \quad \mathbb{E}\left[X | K = k\right]
+(7) \quad \mathbb{E}\left[X | K = k\right]
     &= 100 + \mathbb{E}\left[\sum_{i=k - 1}^{99}Y_i\right] \\[1em] 
-    &= 100 + \mathbb{E}\left[\sum_{i=k - 1}^{99}\left(Z_i + W_i\right)\right] \\[1em] 
+    &= 100 + \mathbb{E}\left[\sum_{i=k - 1}^{99}\left(Z_i + W_i\right)\right] &&\text{(using equation 1)}\\[1em] 
     &= 100 + \sum_{i=k - 1}^{99}\left(\mathbb{E}\left[Z_i\right]\right) +\sum_{i=k-1}^{99}\left(\mathbb{E}\left[W_i\right]\right) && \text{(linearity of expectation)}\\[1em] 
-    &= 100 + \sum_{i=k-1}^{99}\left(\frac{100}{100-i}\right) +\sum_{i=k-1}^{99}100 && \text{(using equations (1) and (2))}\\[1em] 
+    &= 100 + \sum_{i=k-1}^{99}\left(\frac{100}{100-i}\right) +\sum_{i=k-1}^{99}100 && \text{(using equations 2 and 3)}\\[1em] 
     &= 100 + 100 \sum_{j=1}^{101-k}\left(\frac{1}{j}\right) + 100 (101-k) && \text{(substituting $j$ for $100 - i$)}\\[1em] 
     &= 100 + 100(H_{101 - k}) + 100(101 - k) && \text{(\href{https://en.wikipedia.org/wiki/Harmonic_number}{harmonic number} shorthand)}\\[1em] 
     &= 100(H_{101 - k} - k + 102)
@@ -303,30 +302,26 @@ With all of the above, we can finally begin to calculate $\mathbb{E}[X]$:
 
 $$
 \begin{align*}
-(7) \quad \mathbb{E}\left[X\right]
+(8) \quad \mathbb{E}\left[X\right]
       &= \sum_{k=2}^{101}Pr\left(K=k\right)\mathbb{E}\left[X | K=k\right] \\
-      &= \sum_{k=2}^{101}\frac{(k - 1)(100!)}{(100^k)(101 - k)!}  (100(H_{101 - k} - k + 102))  \hspace{4em} \text{(substitutions using equations $4$ and 6)} \\[1em] 
+      &= \sum_{k=2}^{101}\frac{(k - 1)(100!)}{(100^k)(101 - k)!}  (100(H_{101 - k} - k + 102))  \hspace{4em} \text{(using equations $4$ and $5$)} \\[1em] 
       &= \sum_{k=2}^{101}\frac{(k - 1)(100!)}{(100^{k - 1})(101 - k)!}  (H_{101 - k} - k + 102)  \\[1em] 
-      &= \sum_{j=1}^{100}\frac{(j)(100!)}{(100^{j})(100 - j)!}  (H_{100 - j} - j + 101) \hspace{6.5em} \text{(substituting $j$ for $k - 1$)} \\[1em] 
+      &= \sum_{j=1}^{100}\frac{(j)(100!)}{(100^{j})(100 - j)!}  (H_{100 - j} - j + 101) \hspace{6.5em} \text{(substitute $j$ for $k - 1$)} \\[1em] 
       &= \sum_{j=1}^{100}\left(\frac{(j)(100!)}{(100^{j})(100 - j)!}  (H_{100 - j} - j)\right) + 101\sum_{j=1}^{100}\left(\frac{(j)(100!)}{(100^{j})(100 - j)!}\right) \\[1em] 
-           &= \sum_{j=1}^{100}\left(\frac{(j)(100!)}{(100^{j})(100 - j)!}  (H_{100 - j} - j)\right) + 101 \cdot 100 \hspace{2.8em} \text{(substitution using equation 5)} \\[1em] 
+           &= \sum_{j=1}^{100}\left(\frac{(j)(100!)}{(100^{j})(100 - j)!}  (H_{100 - j} - j)\right) + 101 \cdot 100 \hspace{2.8em} \text{(using equation 6)} \\[1em] 
        \qquad &= 10{,}100 + \sum_{j=1}^{100}\left(\frac{(j)(100!)}{(100^{j})(100 - j)!}  (H_{100 - j} - j)\right) \\[1em] 
 \end{align*}
 $$ 
-All that work and the form is still so messy 😢. Let's define / derive a couple more terms that will allow us to simplify further:
+All that work and the form is still messy 😢. Let's define / derive a couple more terms that will allow us to simplify further:
 $$
 \begin{align*}
-&(8) \quad &&a_j = \frac{100!}{(100^j)(100-j)!}  \\[1em] 
-&(9) \quad &&a_{j + 1} = \frac{100!}{(100^{j + 1})(99-j)!} = a_j\left(\frac{100-j}{100}\right) \\[1em] 
-&(10) \quad &&a_j - a_{j + 1} = a_j - a_j\left(\frac{100-j}{100}\right) = j\left(\frac{a_j}{100}\right) \\[1em] 
-&(11) \quad &&a_j - a_{j + 1} = a_j - a_j\left(\frac{100-j}{100}\right) \implies  \\[1em] 
-\quad & &&a_{j - 1} - a_{j} = a_{j - 1} - a_{j - 1}\left(\frac{101-j}{100}\right) \implies  \\[0.5em] 
-\quad & && a_{j} = a_{j - 1}\left(\frac{101-j}{100}\right) \implies  \\[1em] 
-\quad & && \frac{a_{j}}{101-j} = \frac{a_{j - 1}}{100}  \\[1.5em]
-&(12) \quad &&j(a_j) = 100(a_j - a_{j + 1})  \\[0.5em] 
-&(13) \quad &&b_j = H_{100-j} - j  \\[0.5em] 
-&(14) \quad &&b_{j - 1} = H_{101-j} - j + 1  \\[0.5em] 
-&(15) \quad &&b_j - b_{j - 1} =  H_{100-j} - j - (H_{101-j} - j + 1) = - \frac{1}{101-j}- 1 \\[0.5em] 
+&(9) \quad &&a_j = \frac{100!}{(100^j)(100-j)!}  \implies \\
+& \quad &&a_{j + 1} = \frac{100!}{(100^{j + 1})(99-j)!} = a_j\left(\frac{100-j}{100}\right) \implies \\[1em] 
+&(10) \quad &&100(a_j - a_{j + 1}) = 100\left(a_j - a_j\left(\frac{100-j}{100}\right)\right) = j(a_j) \implies \\[1em] 
+&(11)\quad  && \frac{a_{j}}{101-j} = \frac{a_{j - 1}}{100}  \\[1.5em]
+&(12) \quad &&b_j = H_{100-j} - j  \implies \\[0.5em] 
+& \quad &&b_{j - 1} = H_{101-j} - j + 1  \implies \\[0.5em] 
+&(13) \quad &&b_j - b_{j - 1} =  H_{100-j} - j - (H_{101-j} - j + 1) = - \frac{1}{101-j}- 1 \\[0.5em] 
 \end{align*}
 $$ 
 
@@ -336,22 +331,19 @@ $$
 \begin{align*}
 \quad \mathbb{E}\left[X\right]
 &= 10{,}100 + \sum_{j=1}^{100}\left(\frac{(j)(100!)}{(100^{j})(100 - j)!}  (H_{100 - j} - j)\right) \\[1em] 
-&= 10{,}100 + \sum_{j=1}^{100}j(a_j)(b_j) &&\text{(using equations $8$ and $12$)} \\[1em] 
-&= 10{,}100 + 100\sum_{j=1}^{100}(a_j - a_{j + 1})(b_j) &&\text{(using equation $11$)} \\[1em] 
-&= 10{,}100 + 100\left(\sum_{j=1}^{100}(a_j)(b_j) - \sum_{j=1}^{100}(a_{j + 1})(b_j) \right) \\[1em] 
-&= 10{,}100 + 100\left(\sum_{j=1}^{100}(a_j)(b_j) - \sum_{k=2}^{101}(a_{k})(b_{k - 1}) \right) &&\text{(substitute $k = j + 1$ in the second sum)} \\[1em] 
-&= 10{,}100 + 100\left((a_1)(b_1) - (a_{101})(b_{100}) + \sum_{j=2}^{100}(a_j)(b_j - b_{j - 1})   \right) \\[1em] 
-&= 10{,}100 + 100\left(H_{99} - 1 + \frac{100!}{100^{100}} + \sum_{j=2}^{100}(a_j)(b_j - b_{j - 1})   \right) \\[1em] 
-&= 10{,}100 + 100\left(H_{99} - 1 + \frac{100!}{100^{100}} + \sum_{j=2}^{100}(a_j)\left(- \frac{1}{101-j}- 1\right)\right) &&\text{(substitution using equation 15)}\\[1em] 
-&= 10{,}100 + 100\left(H_{99} - 1 + \frac{100!}{100^{100}} + \sum_{j=2}^{100}- \frac{a_j}{101-j}- \sum_{j=2}^{100}(a_j)\right) \\[1em] 
-&= 10{,}100 + 100\left(H_{99} - 1 + \frac{100!}{100^{100}} + \sum_{j=2}^{100}- \frac{a_{j - 1}}{100}- \sum_{j=2}^{100}(a_j)\right) &&\text{(substitution using equation 11)}\\[1em] 
-&= 10{,}100 + 100\left(H_{99} - 1 + \frac{100!}{100^{100}} - \frac{1}{100}\sum_{j=2}^{100} a_{j - 1}- \sum_{j=2}^{100}(a_j)\right) \\[1em] 
-&= 10{,}100 + 100\left(H_{99} - 1 + \frac{100!}{100^{100}} - \frac{1}{100}\sum_{j=1}^{99} a_{j}- \sum_{j=2}^{100}(a_j)\right) \\[1em] 
-&= 10{,}100 + 100\left(H_{99} - 1 + \frac{100!}{100^{100}} - \frac{101}{100}\sum_{j=2}^{99}\left(a_{j}\right) -\frac{a_1}{100} - a_{100}\right) \\[1em] 
-&= 10{,}100 + 100\left(H_{99} - 1 + \frac{100!}{100^{100}} -\frac{a_1}{100} - a_{100} - \frac{101}{100}\sum_{j=2}^{99}\left(a_{j}\right) \right) \\[1em] 
-% SOLID UP TO HERE
-&\approx 10{,}100 + 100\left(4.167 - \frac{101}{100}\sum_{j=2}^{99}\left(a_{j}\right)   \right) \\[1em] 
-&\approx 10{,}517 - 101 \left(\sum_{j=2}^{99}\frac{100!}{(100^j)(100-j)!}   \right) \\
+&= 10{,}100 + \sum_{j=1}^{100}j(a_j)(b_j) &&\text{(using equations $9$ and $12$)} \\[1em] 
+&= 10{,}100 + 100\sum_{j=1}^{100}(a_j - a_{j + 1})(b_j) &&\text{(using equation $10$)} \\[1em] 
+&= 10{,}100 + 100\left(\sum_{j=1}^{100}(a_j)(b_j) - \sum_{j=1}^{100}(a_{j + 1})(b_j) \right) &&\text{(distributing $b_j$)} \\[1em] 
+&= \ldots\left(\sum_{j=1}^{100}(a_j)(b_j) - \sum_{k=2}^{101}(a_{k})(b_{k - 1}) \right) &&\text{($k = j + 1$ in the second sum)} \\[1em] 
+&= \ldots\left((a_1)(b_1) - (a_{101})(b_{100}) + \sum_{j=2}^{100}(a_j)(b_j - b_{j - 1}) \right) &&\text{(combining the sums)} \\[1em] 
+&= \ldots\left(H_{99} - 1 + \frac{100!}{100^{100}} + \sum_{j=2}^{100}(a_j)(b_j - b_{j - 1})   \right) &&\text{(simplifying constants)}\\[1em] 
+&= \ldots\left(H_{99} - 1 + \frac{100!}{100^{100}} + \sum_{j=2}^{100}(a_j)\left(- \frac{1}{101-j}- 1\right)\right) &&\text{(using equation $13$)}\\[1em] 
+&= \ldots\left(H_{99} - 1 + \frac{100!}{100^{100}} + \sum_{j=2}^{100}- \frac{a_j}{101-j}- \sum_{j=2}^{100}(a_j)\right)  &&\text{(distributing $a_j$)}\\[1em] 
+&= \ldots\left(H_{99} - 1 + \frac{100!}{100^{100}} + \sum_{j=2}^{100}- \frac{a_{j - 1}}{100}- \sum_{j=2}^{100}(a_j)\right) &&\text{(using equation $11$)}\\[1em] 
+&= \ldots\left(H_{99} - 1 + \frac{100!}{100^{100}} - \frac{1}{100}\sum_{k=1}^{99} a_{k}- \sum_{j=2}^{100}(a_j)\right) &&\text{($k=j-1$ in the first sum)}\\[1em] 
+&= \ldots\left(H_{99} - 1 + \frac{100!}{100^{100}} - \frac{101}{100}\sum_{j=2}^{99}\left(a_{j}\right) -\frac{a_1}{100} - a_{100}\right) &&\text{(combining the sums)}\\[1em] 
+&\approx 10{,}100 + 100\left(4.167 - \frac{101}{100}\sum_{j=2}^{99}\left(a_{j}\right)   \right) &&\text{(combining constants)} \\[1em] 
+&\approx 10{,}517 - 101 \left(\sum_{j=2}^{99}\frac{100!}{(100^j)(100-j)!}   \right) &&\text{(reverting $a_j$)} \\
 &\approx 9{,}385 \text{ days}
 \end{align*}
 $$ 
@@ -420,7 +412,7 @@ Output:
 > Max: 13,734 <br />
 > Mean Standard Error: 11.3
 
-The simulation once again matches up with our calculations 😊. Using this procedure, the prisoners should expect to be free in $9{,}384$ days, or roughly $25.7$ years. We were able to shave almost three years off the standard one counter solution! <br /> <br />
+The simulation once again matches up with our calculations 😊. Using this procedure, the prisoners should expect to be free in $9{,}384$ days, or roughly $25.7$ years. We were able to shave almost three years off of the standard one counter solution! <br /> <br />
 
 ### Solution 4: Multiple Counters
 
