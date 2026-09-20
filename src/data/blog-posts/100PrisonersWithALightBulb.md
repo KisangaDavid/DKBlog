@@ -9,7 +9,21 @@ description: One hundred prisoners have been newly ushered into prison. The ward
   p {
     margin-bottom: 0em;
   }
+table {
+  table-layout: auto;
+  border-collapse: collapse;
+  margin-inline: auto;
+}
 
+th, td {
+  padding: 0.75rem;
+  border: 1px solid #738aa7;
+  text-align: left;
+}
+
+th {
+  font-weight: 600;
+}
 pre {
   line-height: 0.9em;
   display: block;
@@ -348,8 +362,6 @@ $$
 \end{align*}
 $$ 
 
-
-
 **Simulating the Procedure:**
 ```py
 import random
@@ -416,4 +428,34 @@ The simulation once again matches up with our calculations 😊. Using this proc
 
 ### Solution 4: Multiple Counters
 
-**Procedure:**
+**Procedure:** The prisoners first define the following parameters:
+> $a$: The number of sub-counters <br />
+> $q$: The number of prisoners each sub-counter is responsible for counting <br />
+> $s_1$: The length of the first stage <br />
+> $s_2$: The length of the second stage <br />
+> Note: $aq$ must equal 99
+
+They then pick one prisoner to be the "main counter" and $a$ other prisoners to be "sub-counters." The main counter and sub-counters keep track of how many prisoners they have counted so far, denoted $count$ and initialized to $0$. Each prisoner also keeps track of two additional variables $t_1$ and $t_2$, which represents the number of times they must turn the lightbulb on in each phase. Regular prisoners initialize $t_1$ to $1$, all other instances of $t_1$ and $t_2$ are initialized to $0$: <br /> <br />
+| Initial Variable Values per Prisoner Type | $t_1$ | $t_2$ | $count$
+| ---| --- | --- | --- |
+| Main counter | $0$ | $0$ | $0$ |
+| Sub-counter | $0$ | $0$ | $0$ |
+| Regular prisoner | $1$ | $0$ | N/A |
+<br />
+
+Once the setup is settled, Stages $1$ and $2$ are repeated in sequence until the head counter declares that all prisoners have visited the room. The prisoners act as follows during each stage:<br /> 
+
+- Stage $1$:
+  - If any prisoner sees an off lightbulb and has a positive $t_1$, they turn the lightbulb on and decrement $t_1$.
+  - If a sub-counter sees an on lightbulb and has a $count$ less than $q$, they turn it off and increment $count$. If $count$ now equals $q$, they increment $t_2$.
+  - If it is the last day of stage $1$ and the current prisoner still sees an on lightbulb after executing any relevant actions above, they turn the lightbulb off and increment $t_1$.
+- Stage $2$:
+  - If any prisoner sees an off lightbulb and has a positive $t_2$, they turn the lightbulb on and decrement $t_2$.
+  - If the main counter sees an on lightbulb, they turn the lightbulb off and increment their internal count. If their internal count is now equal to $a$, they declare all prisoners have visited the room.
+  - If it is the last day of stage $2$ and the current prisoner still sees an on lightbulb after executing any relevant actions above, they turn the lightbulb off and increment $t_2$.
+
+Intuitively, this procedure improves on the one-counter solution by allowing multiple sub-counters to count prisoners during stage $1$. During stage $2$, the main counter counts the number of sub-counters who have counted their "quota" of $q$ prisoners. For the main counter to be sure that each prisoner has visited the room at least once, each sub-counter needs to count to $q$ in stage $1$, and the main counter needs to count to $a$ in stage $2$. With well-chosen parameters, this ends up taking significantly less time than a single counter counting to $99$.
+
+Mathematically calculating the expected runtime of this procedure is quite difficult, if not impossible, so we rely entirely on simulation for efficiency analysis.
+
+**Simulating the Procedure:**
