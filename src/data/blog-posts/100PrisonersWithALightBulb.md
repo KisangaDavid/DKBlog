@@ -433,7 +433,7 @@ The simulation once again matches up with our calculations 😊. Using this proc
 > $q$: The number of prisoners each sub-counter is responsible for counting <br />
 > $s_1$: The length of the first stage <br />
 > $s_2$: The length of the second stage <br />
-> Note: $aq$ must equal 99
+> Note: $q$ can be derived from the value of $a$: $q$ = $\frac{99}{a} - 1$
 
 They then pick one prisoner to be the "main counter" and $a$ other prisoners to be "sub-counters." The main counter and sub-counters keep track of how many prisoners they have counted so far, denoted $count$ and initialized to $0$. Each prisoner also keeps track of two additional variables $t_1$ and $t_2$, which represents the number of times they must turn the lightbulb on in each phase. Regular prisoners initialize $t_1$ to $1$, all other instances of $t_1$ and $t_2$ are initialized to $0$: <br /> <br />
 | Initial Variable Values per Prisoner Type | $t_1$ | $t_2$ | $count$
@@ -456,6 +456,121 @@ Once the setup is settled, Stages $1$ and $2$ are repeated in sequence until the
 
 Intuitively, this procedure improves on the one-counter solution by allowing multiple sub-counters to count prisoners during stage $1$. During stage $2$, the main counter counts the number of sub-counters who have counted their "quota" of $q$ prisoners. For the main counter to be sure that each prisoner has visited the room at least once, each sub-counter needs to count to $q$ in stage $1$, and the main counter needs to count to $a$ in stage $2$. With well-chosen parameters, this ends up taking significantly less time than a single counter counting to $99$.
 
-Mathematically calculating the expected runtime of this procedure is quite difficult, if not impossible, so we rely entirely on simulation for efficiency analysis.
+Mathematically calculating the expected runtime of this procedure is quite difficult, if not impossible, so we rely entirely on simulation for runtime analysis.
 
 **Simulating the Procedure:**
+```py
+import random
+
+NUM_ITERATIONS = 1000
+NUM_PRISONERS = 100
+
+NUM_SUB_COUNTERS = 11
+STAGE_1_LENGTH = 100
+STAGE_2_LENGTH = 100
+
+class Prisoner:
+    def __init__(self, is_main_counter, is_sub_counter):
+        self.count = 0
+        self.t1 = 1 if not is_main_counter and not is_sub_counter else 0 
+        self.t2 = 0
+        self.is_main_counter = is_main_counter
+        self.is_sub_counter = is_sub_counter
+
+def setup_prisoners(num_sub_counters):
+    prisoners = []
+    counters = random.sample(range(0,NUM_PRISONERS), num_sub_counters + 1)
+    main_counter = counters[0]
+    sub_counters = counters[1:]
+    for i in range(0, NUM_PRISONERS):
+        if i == main_counter:
+            prisoners.append(Prisoner(True, False))
+        elif i in sub_counters:
+            prisoners.append(Prisoner(False, True))
+        else:
+            prisoners.append(Prisoner(False, False))
+    return prisoners
+
+def simulate_procedure(num_sub_counters, stage_1_length, stage_2_length):
+    bulb_on = False
+    prisoner_list = setup_prisoners(num_sub_counters)
+    num_days_taken = 0
+    sub_counter_quota = (NUM_PRISONERS - 1) // num_sub_counters - 1
+    while True:
+        for i in range(0, stage_1_length):
+            num_days_taken += 1
+            chosen_prisoner = prisoner_list[random.randrange(0, NUM_PRISONERS)]
+            if not bulb_on and chosen_prisoner.t1 > 0:
+                bulb_on = True
+                chosen_prisoner.t1 -= 1
+            if bulb_on and chosen_prisoner.is_sub_counter and chosen_prisoner.count < sub_counter_quota:
+                bulb_on = False
+                chosen_prisoner.count += 1
+                if chosen_prisoner.count >= sub_counter_quota:
+                    chosen_prisoner.t2 += 1
+            if i == stage_1_length - 1:
+                if bulb_on:
+                    bulb_on = False
+                    chosen_prisoner.t1 += 1
+        for i in range(0, stage_2_length):
+            num_days_taken += 1
+            chosen_prisoner = prisoner_list[random.randrange(0, NUM_PRISONERS)]
+            if not bulb_on and chosen_prisoner.t2 > 0:
+                bulb_on = True
+                chosen_prisoner.t2 -= 1
+            if bulb_on and chosen_prisoner.is_main_counter:
+                bulb_on = False
+                chosen_prisoner.count += 1
+                if chosen_prisoner.count == num_sub_counters:
+                    return num_days_taken
+            if i == stage_2_length - 1:
+                if bulb_on:
+                    bulb_on = False
+                    chosen_prisoner.t2 += 1
+
+def estimate_mean(num_sub_counters, stage_1_length, stage_2_length):
+    simulated_results = []
+    for _ in range(0, NUM_ITERATIONS):
+        simulated_results.append(simulate_procedure(num_sub_counters, stage_1_length, stage_2_length))
+        mean = sum(simulated_results) / NUM_ITERATIONS
+        std_dev = (sum((x - mean) ** 2 for x in simulated_results) / NUM_ITERATIONS)**0.5
+    print(
+        f"Mean: {mean:.0f}\n"
+        f"Min: {min(simulated_results)}\n"
+        f"Max: {max(simulated_results)}\n"
+        f"Standard Error of Mean: {std_dev / NUM_ITERATIONS**0.5:.1f}"
+    )
+    return mean
+
+estimate_mean(NUM_SUB_COUNTERS, STAGE_1_LENGTH, STAGE_2_LENGTH)
+```
+Output:
+> Avg: XXX <br />
+> Min: XXX <br />
+> Max: XXX <br />
+> Mean Standard Error: XXX
+
+As shown above, with $9$ sub-counters and stages $1$ and $2$ both being set to $100$ days, 
+the prisoners can expect to be free in roughly XXX days, or XX years. We can further improve on this by 
+tweaking the parameters, i.e. the number of sub-counters and the length of each stage. 
+Since we lack a closed-form representation and don't have derivatives to 
+perform gradient descent on, we'll instead utilize Bayesian optimization to tune the parameters.
+This can be done quite easily using the fantastic scikit-learn package:
+
+```py
+PLACEHOLDER
+
+```
+
+Output:
+>
+>
+>
+>
+
+Plugging X=x Y=y and Z=z back into the simulation snippet yields:
+
+Thus, with proper parameter tuning, the multiple counters procedure cuts the expected time until the prisoners are free to just XXX days, or around ~ years. That's a $2$x improvement over the staged counter solution!
+
+### Solution 5:
+
