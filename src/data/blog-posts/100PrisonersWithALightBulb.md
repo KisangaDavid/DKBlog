@@ -52,10 +52,12 @@ pre {
 
   .centered-image-presents img {
     display: block;
-    margin: 0 auto;
-    margin-bottom: 0.7em;
+    margin: 0 auto 0.7em;
     max-height: 32em;
-    object-fit: contain;
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    border-radius: 10px;
   }
 
   .with-border img {
@@ -90,7 +92,7 @@ pre {
 
 </style>
 
-<div classname="centered-image-presents">
+<div class="centered-image-presents">
 
 ![Presents](../../assets/100PrisonersWithALightBulb.jpg)
 
@@ -105,11 +107,11 @@ unable to communicate with each other. Each day, the warden will choose
 a random prisoner and bring them to
 a room containing only a single light bulb.
 The prisoner will be able to observe the current state of the light bulb, 
-as well as toggle it if they wish. The warden will never touch the lightbulb, and its initial state on day 1 is off. The prisoner also has the option of announcing that
+as well as toggle it if they wish. The warden will never touch the lightbulb, and the lightbulb is initially off on day $1$. The prisoner also has the option of announcing that
 all prisoners have visited the room at some point in
 time. If the announcement is true, then all prisoners are set free. However, if it is false, then all the prisoners are executed. The warden leaves, and the prisoners huddle 
 together to discuss their fate. Can they agree on a procedure that will guarantee their freedom in as short a time as possible?
-> Note: Everyone I've talked to who was familiar with this puzzle had only ever heard of solution #2. However, there exist much better solutions, which will be proven below!
+> Note: Everyone I've talked to who was familiar with this puzzle had only ever heard of solution #2. However, there exist much better solutions, which will be shown below!
 
 ## Solutions
 
@@ -121,12 +123,13 @@ Solutions are presented in order of increasing complexity.
 [Solution #4: Multiple Counters](#solution-4-multiple-counters) <br /> <br />
 
 ### Solution 1: Lucky Chunks
-**Procedure**: The prisoners prearrange to track their time in prison in 100 day chunks. During their stay, they act as follows:
-- If it is a prisoner's first time visiting the room in a given 100 day chunk, do nothing.
-- If it is a prisoner's second time visiting the room in a given 100 day chunk, turn the lightbulb on.
-- On the last day of each 100 day chunk, if the light bulb is off, declare that every prisoner has visited the room. Otherwise, turn the lightbulb off.
+**Procedure**: <br />
+The prisoners prearrange to track their time in prison in $100$ day chunks. During their stay, they act as follows:
+- If it is a prisoner's first time visiting the room in a given $100$ day chunk, do nothing.
+- If it is a prisoner's second time visiting the room in a given $100$ day chunk, turn the lightbulb ON.
+- On the last day of each $100$ day chunk, if the light bulb is OFF, declare that every prisoner has visited the room. Otherwise, turn the lightbulb OFF.
 
-This procedure allows the prisoners to detect whether each person was brought to the room exactly once during a pre-determined 100 day chunk. If so, the light will remain off on the last day of the chunk. If any prisoner was selected more than once in the chunk, they turn the bulb on, signalling to the prisoner entering on the 100th day that there has been at least 1 repeat. That prisoner then turns the bulb off, and a new chunk of 100 days is tested. <br /> <br />
+This procedure allows the prisoners to detect whether each prisoner was brought to the room exactly once during a predetermined $100$ day chunk. If so, the light will remain off on the last day of the chunk. If any prisoner was selected more than once in the chunk, they turn the bulb on, signalling to the prisoner entering on the $100$th day that there has been at least $1$ repeat. That prisoner then turns the bulb off, and a new chunk of $100$ days is tested. <br /> <br />
 **Expected Runtime:** <br />
 The expected number of days until the prisoners are free, denoted as $\mathbb{E}[X]$, can be calculated as follows:
 
@@ -146,12 +149,12 @@ Thus, the prisoners should expect to be free in roughly $1.07 * 10^{44}$ days. T
 ### Solution 2: One Counting Prisoner
 
 **Procedure**: 
-- The first prisoner to visit the room is designated "the counter." They keep an internal count in their head, initialized to 1.
-- If a non-counter sees an off lightbulb and they have never switched the lightbulb on before, they switch it on.
-- If the counter sees an on lightbulb, they increment their internal count and switch the lightbulb off.
-- Once the counter's internal count reaches 100, they declare that all prisoners have visited the room.
+- The first prisoner to visit the room is designated "the counter." They keep an internal count in their head, initialized to $1$.
+- If a non-counter sees an OFF lightbulb and they have never switched the lightbulb ON before, they switch it ON.
+- If the counter sees an ON lightbulb, they increment their internal count and switch the lightbulb OFF.
+- Once the counter's internal count reaches $100$, they declare that all prisoners have visited the room.
 
-Under this procedure, every prisoner except for the counter switches the lightbulb on exactly once. The counter's internal count tracks precisely $1$ + the number of times the lightbulb has been switched on, which forms a strict lower bound for the number of unique prisoners that have visited the room. Thus, when the count reaches 100, the counter may declare with full confidence that all prisoners have visited the room at least once.
+Under this procedure, every prisoner except for the counter switches the lightbulb on exactly once. The counter's internal count tracks precisely $1$ + the number of times the lightbulb has been switched on, which forms a strict lower bound for the number of unique prisoners that have visited the room. Thus, when the count reaches $100$, the counter may declare with full confidence that all prisoners have visited the room at least once.
 
 **Expected Runtime:** <br />
 To determine the expected number of days until the prisoners are free, first lets define a couple useful random variables and probabilities:
@@ -200,8 +203,6 @@ import random
 NUM_ITERATIONS = 10000
 NUM_PRISONERS = 100
 
-simulated_results = []
-
 def num_days_for_new_prisoner(counted_prisoners):
     num_days = 1
     while True:
@@ -218,7 +219,9 @@ def num_days_for_counter(counting_prisoner):
         if chosen_prisoner == counting_prisoner:
             return num_days
         num_days += 1
-        
+
+simulated_results = []
+    
 for i in range(0, NUM_ITERATIONS):
     counting_prisoner = random.randint(1, NUM_PRISONERS)
     counted_prisoners = {counting_prisoner}
@@ -236,28 +239,28 @@ print(
     f"Mean: {mean:.0f}\n"
     f"Min: {min(simulated_results)}\n"
     f"Max: {max(simulated_results)}\n"
-    f"Mean Standard Error: {std_dev / NUM_ITERATIONS**0.5:.1f}"
+    f"Standard Error of Mean: {std_dev / NUM_ITERATIONS**0.5:.1f}"
 )
 ```
 Output:
-> Avg: 10,420 <br />
+> Mean: 10,422 <br />
 > Min: 6,978 <br />
 > Max: 14,554 <br />
-> Mean Standard Error: 10.0
+> Standard Error of Mean: 10.0
 
 The simulations back up our calculations! Using this procedure the prisoners should expect to be free in around $10{,}419$ days, or just over $28.5$ years. This is much more reasonable than solution #$1$, but we can still do better!
 <br /> <br />
 
 ### Solution 3: Staged Counter Selection
 
-**Procedure**: 
+**Procedure**: <br />
 The prisoners prearrange to split their time in prison into two stages: stage $1$ will last for $100$ days, and stage $2$ will last until the prisoners are free. They then act as follows: <br />
 - Stage $1$:
-  - If a prisoner enters the room for the first time and the lightbulb is off, they consider themselves "counted." They are forbidden from turning the lightbulb on in the second stage.
-  - If a prisoner enters the room for the second time and the lightbulb is off, they turn it on, designate themselves as "the counter," and set their internal count to the current day - $1$.
-  - If a prisoner enters the room for the first time on day $100$ and the lightbulb is off, they immediately declare that all prisoners have visited the room. <br />
+  - If a prisoner enters the room for the first time and the lightbulb is OFF, they consider themselves "counted." They are forbidden from turning the lightbulb ON in the second stage.
+  - If a prisoner enters the room for the second time and the lightbulb is OFF, they turn it ON, designate themselves as "the counter," and set their internal count to the number of the current day - $1$.
+  - If a prisoner enters the room for the first time on day $100$ and the lightbulb is OFF, they immediately declare that all prisoners have visited the room. <br />
 - Stage $2$:
-  - The prisoners act identically to the *One Counter* solution, with the exception that the "counted" prisoners from above are never allowed to turn the lightbulb on.
+  - The prisoners act identically to the *One Counter* solution, with the exception that the "counted" prisoners from above are never allowed to turn the lightbulb ON.
 
 To show intuitively why this procedure works, let's define $K$ as the first day a prisoner enters the room for the second time during stage $1$. The prisoner entering on day $K$ will know that they're the first repeat visitor because the lightbulb will still be off. They therefore also know that the number of unique visitors so far is exactly $K - 1$. If this prisoner is assigned the role of counter, and the already-counted prisoners are not allowed to touch the lightbulb in the $2$nd stage, then the counter only needs to count $100 - (K - 1)$ other prisoners during stage $2$ to have full confidence that all prisoners have visited the room.
 <br />
@@ -368,6 +371,7 @@ import random
 
 NUM_ITERATIONS = 10000
 NUM_PRISONERS = 100
+
 PHASE_ONE_LENGTH = 100
 
 simulated_results = []
@@ -415,46 +419,48 @@ print(
     f"Mean: {mean:.0f}\n"
     f"Min: {min(simulated_results)}\n"
     f"Max: {max(simulated_results)}\n"
-    f"Mean Standard Error: {std_dev / NUM_ITERATIONS**0.5:.1f}"
+    f"Standard Error of Mean: {std_dev / NUM_ITERATIONS**0.5:.1f}"
 )
 ```
 Output:
-> Avg: 9,382 <br />
+> Mean: 9,382 <br />
 > Min: 5,688 <br />
 > Max: 13,734 <br />
-> Mean Standard Error: 11.3
+> Standard Error of Mean: 11.3
 
 The simulation once again matches up with our calculations 😊. Using this procedure, the prisoners should expect to be free in $9{,}384$ days, or roughly $25.7$ years. We were able to shave almost three years off of the standard one counter solution! <br /> <br />
 
 ### Solution 4: Multiple Counters
 
-**Procedure:** The prisoners first define the following parameters:
+**Procedure:** <br />
+The prisoners first define the following parameters:
 > $a$: The number of sub-counters <br />
 > $q$: The number of prisoners each sub-counter is responsible for counting <br />
 > $s_1$: The length of the first stage <br />
 > $s_2$: The length of the second stage <br />
-> Note: $q$ can be derived from the value of $a$: $q$ = $\frac{99}{a} - 1$
+> $s_1'$: The length of subsequent stage 1s <br />
+> $s_2'$: The length of subsequent stage 2s <br />
+> Note: $q$ can be derived from the value of $a$: $q$ = $\frac{100}{a} - 1$
 
-They then pick one prisoner to be the "main counter" and $a$ other prisoners to be "sub-counters." The main counter and sub-counters keep track of how many prisoners they have counted so far, denoted $count$ and initialized to $0$. Each prisoner also keeps track of two additional variables $t_1$ and $t_2$, which represents the number of times they must turn the lightbulb on in each phase. Regular prisoners initialize $t_1$ to $1$, all other instances of $t_1$ and $t_2$ are initialized to $0$: <br /> <br />
-| Initial Variable Values per Prisoner Type | $t_1$ | $t_2$ | $count$
-| ---| --- | --- | --- |
-| Main counter | $0$ | $0$ | $0$ |
-| Sub-counter | $0$ | $0$ | $0$ |
-| Regular prisoner | $1$ | $0$ | N/A |
+They then pick $a$ prisoners to be "sub-counters," one of which will also be the "main counter." The sub-counters keep track of how many prisoners they have counted so far, denoted $sub\_count$ and initialized to $0$. The main counter additionally keeps track of how many sub-counters they have counted, denoted $main\_count$ and also initialized to $0$. Each prisoner additionally keeps track of two more variables, $t_1$ and $t_2$, which represent the number of times they must turn the lightbulb on in each phase. Regular prisoners initialize $t_1$ to $1$, all other instances of $t_1$ and $t_2$ are initialized to $0$: <br /> <br />
+| Initial Variable Values per Prisoner Type | $t_1$ | $t_2$ | $sub\_count$ | $main\_count$ |
+| ---| --- | --- | --- | --- |
+| Sub-counters / Main counter | $0$ | $0$ | $0$ | $0$ |
+| Regular prisoner | $1$ | $0$ | N/A | N/A
 <br />
 
-Once the setup is settled, Stages $1$ and $2$ are repeated in sequence until the head counter declares that all prisoners have visited the room. The prisoners act as follows during each stage:<br /> 
+Once the setup is settled, Stages $1$ and $2$ are repeated in sequence until the head counter declares that all prisoners have visited the room. The lengths of stages $1$ and $2$ are denoted by $s_1$ and $s_2$ in the first iteration, and by $s_1'$ and $s_2'$ in all subsequent iterations. The prisoners act as follows during each stage:<br /> 
 
 - Stage $1$:
-  - If any prisoner sees an off lightbulb and has a positive $t_1$, they turn the lightbulb on and decrement $t_1$.
-  - If a sub-counter sees an on lightbulb and has a $count$ less than $q$, they turn it off and increment $count$. If $count$ now equals $q$, they increment $t_2$.
-  - If it is the last day of stage $1$ and the current prisoner still sees an on lightbulb after executing any relevant actions above, they turn the lightbulb off and increment $t_1$.
+  - If any prisoner sees an OFF lightbulb and has a positive $t_1$, they turn the lightbulb ON and decrement $t_1$.
+  - If a sub-counter sees an ON lightbulb and has a $sub\_count$ less than $q$, they turn it OFF and increment $sub\_count$. If $sub\_count$ now equals $q$, they increment $t_2$.
+  - If it is the last day of stage $1$ and the current prisoner still sees an ON lightbulb after executing any relevant actions above, they turn the lightbulb OFF and increment $t_1$.
 - Stage $2$:
-  - If any prisoner sees an off lightbulb and has a positive $t_2$, they turn the lightbulb on and decrement $t_2$.
-  - If the main counter sees an on lightbulb, they turn the lightbulb off and increment their internal count. If their internal count is now equal to $a$, they declare all prisoners have visited the room.
-  - If it is the last day of stage $2$ and the current prisoner still sees an on lightbulb after executing any relevant actions above, they turn the lightbulb off and increment $t_2$.
+  - If any prisoner sees an OFF lightbulb and has a positive $t_2$, they turn the lightbulb ON and decrement $t_2$.
+  - If the main counter sees an ON lightbulb, they turn the lightbulb OFF and increment $main\_count$. If $main\_count$ is now equal to $a$, they declare that all prisoners have visited the room.
+  - If it is the last day of stage $2$ and the current prisoner still sees an ON lightbulb after executing any relevant actions above, they turn the lightbulb OFF and increment $t_2$.
 
-Intuitively, this procedure improves on the one-counter solution by allowing multiple sub-counters to count prisoners during stage $1$. During stage $2$, the main counter counts the number of sub-counters who have counted their "quota" of $q$ prisoners. For the main counter to be sure that each prisoner has visited the room at least once, each sub-counter needs to count to $q$ in stage $1$, and the main counter needs to count to $a$ in stage $2$. With well-chosen parameters, this ends up taking significantly less time than a single counter counting to $99$.
+Intuitively, this procedure improves on the one counter solution by allowing multiple sub-counters to count prisoners during stage $1$. During stage $2$, the main counter counts the number of sub-counters who have counted their "quota" of $q$ prisoners. For the main counter to be sure that each prisoner has visited the room at least once, each sub-counter needs to count to $q$ in stage $1$, and the main counter needs to count to $a$ in stage $2$. With well-chosen parameters, this ends up taking significantly less time than a single counter counting to $100$.
 
 Mathematically calculating the expected runtime of this procedure is quite difficult, if not impossible, so we rely entirely on simulation for runtime analysis.
 
@@ -462,40 +468,47 @@ Mathematically calculating the expected runtime of this procedure is quite diffi
 ```py
 import random
 
-NUM_ITERATIONS = 1000
+NUM_ITERATIONS = 10000
 NUM_PRISONERS = 100
 
-NUM_SUB_COUNTERS = 11
+NUM_SUB_COUNTERS = 10
 STAGE_1_LENGTH = 100
 STAGE_2_LENGTH = 100
+SECONDARY_STAGE_1_LENGTH = 100
+SECONDARY_STAGE_2_LENGTH = 100
 
 class Prisoner:
     def __init__(self, is_main_counter, is_sub_counter):
-        self.count = 0
-        self.t1 = 1 if not is_main_counter and not is_sub_counter else 0 
+        self.sub_count = 0
+        self.main_count = 0
+        self.t1 = 1 if not is_sub_counter else 0 
         self.t2 = 0
         self.is_main_counter = is_main_counter
         self.is_sub_counter = is_sub_counter
 
 def setup_prisoners(num_sub_counters):
     prisoners = []
-    counters = random.sample(range(0,NUM_PRISONERS), num_sub_counters + 1)
-    main_counter = counters[0]
-    sub_counters = counters[1:]
+    sub_counters = random.sample(range(0,NUM_PRISONERS), num_sub_counters)
+    main_counter = sub_counters[0]
     for i in range(0, NUM_PRISONERS):
+        is_sub_counter = False
+        is_main_counter = False
         if i == main_counter:
-            prisoners.append(Prisoner(True, False))
-        elif i in sub_counters:
-            prisoners.append(Prisoner(False, True))
-        else:
-            prisoners.append(Prisoner(False, False))
+            is_main_counter = True
+        if i in sub_counters:
+            is_sub_counter = True
+        prisoners.append(Prisoner(is_main_counter, is_sub_counter))
     return prisoners
 
-def simulate_procedure(num_sub_counters, stage_1_length, stage_2_length):
+def simulate_procedure(num_sub_counters, 
+                       stage_1_length, 
+                       stage_2_length, 
+                       secondary_stage_1_length, 
+                       secondary_stage_2_length):
     bulb_on = False
     prisoner_list = setup_prisoners(num_sub_counters)
     num_days_taken = 0
-    sub_counter_quota = (NUM_PRISONERS - 1) // num_sub_counters - 1
+    sub_counter_quota = NUM_PRISONERS // num_sub_counters - 1
     while True:
         for i in range(0, stage_1_length):
             num_days_taken += 1
@@ -503,10 +516,13 @@ def simulate_procedure(num_sub_counters, stage_1_length, stage_2_length):
             if not bulb_on and chosen_prisoner.t1 > 0:
                 bulb_on = True
                 chosen_prisoner.t1 -= 1
-            if bulb_on and chosen_prisoner.is_sub_counter and chosen_prisoner.count < sub_counter_quota:
+            if (bulb_on 
+                and chosen_prisoner.is_sub_counter 
+                and chosen_prisoner.sub_count < sub_counter_quota
+            ):
                 bulb_on = False
-                chosen_prisoner.count += 1
-                if chosen_prisoner.count >= sub_counter_quota:
+                chosen_prisoner.sub_count += 1
+                if chosen_prisoner.sub_count >= sub_counter_quota:
                     chosen_prisoner.t2 += 1
             if i == stage_1_length - 1:
                 if bulb_on:
@@ -520,57 +536,118 @@ def simulate_procedure(num_sub_counters, stage_1_length, stage_2_length):
                 chosen_prisoner.t2 -= 1
             if bulb_on and chosen_prisoner.is_main_counter:
                 bulb_on = False
-                chosen_prisoner.count += 1
-                if chosen_prisoner.count == num_sub_counters:
+                chosen_prisoner.main_count += 1
+                if chosen_prisoner.main_count == num_sub_counters:
                     return num_days_taken
             if i == stage_2_length - 1:
                 if bulb_on:
                     bulb_on = False
                     chosen_prisoner.t2 += 1
+        stage_1_length = secondary_stage_1_length
+        stage_2_length = secondary_stage_2_length
 
-def estimate_mean(num_sub_counters, stage_1_length, stage_2_length):
+def estimate_mean(num_iterations, 
+                  num_sub_counters, 
+                  stage_1_length, 
+                  stage_2_length,
+                  secondary_stage_1_length,
+                  secondary_stage_2_length):
     simulated_results = []
-    for _ in range(0, NUM_ITERATIONS):
-        simulated_results.append(simulate_procedure(num_sub_counters, stage_1_length, stage_2_length))
-        mean = sum(simulated_results) / NUM_ITERATIONS
-        std_dev = (sum((x - mean) ** 2 for x in simulated_results) / NUM_ITERATIONS)**0.5
+    for _ in range(0, num_iterations):
+        simulated_results.append(simulate_procedure(num_sub_counters, 
+                                                    stage_1_length, 
+                                                    stage_2_length,
+                                                    secondary_stage_1_length,
+                                                    secondary_stage_2_length))
+    mean = sum(simulated_results) / num_iterations
+    std_dev = (sum((x - mean) ** 2 for x in simulated_results) / num_iterations)**0.5
     print(
         f"Mean: {mean:.0f}\n"
         f"Min: {min(simulated_results)}\n"
         f"Max: {max(simulated_results)}\n"
-        f"Standard Error of Mean: {std_dev / NUM_ITERATIONS**0.5:.1f}"
+        f"Standard Error of Mean: {std_dev / num_iterations**0.5:.1f}"
     )
     return mean
 
-estimate_mean(NUM_SUB_COUNTERS, STAGE_1_LENGTH, STAGE_2_LENGTH)
+if __name__ == "__main__":
+    estimate_mean(NUM_ITERATIONS, 
+                  NUM_SUB_COUNTERS, 
+                  STAGE_1_LENGTH, 
+                  STAGE_2_LENGTH, 
+                  SECONDARY_STAGE_1_LENGTH, 
+                  SECONDARY_STAGE_2_LENGTH)
 ```
 Output:
-> Avg: XXX <br />
-> Min: XXX <br />
-> Max: XXX <br />
-> Mean Standard Error: XXX
+> Mean: 5,627 <br />
+> Min: 3,196 <br />
+> Max: 11,998 <br />
+> Standard Error of Mean: 10.6
 
-As shown above, with $9$ sub-counters and stages $1$ and $2$ both being set to $100$ days, 
-the prisoners can expect to be free in roughly XXX days, or XX years. We can further improve on this by 
+As shown above, with $10$ sub-counters and all stage lengths being set to $100$ days, 
+the prisoners can expect to be free in roughly $5{,}627$ days, or $15.4$ years. We can further improve on this by 
 tweaking the parameters, i.e. the number of sub-counters and the length of each stage. 
 Since we lack a closed-form representation and don't have derivatives to 
-perform gradient descent on, we'll instead utilize Bayesian optimization to tune the parameters.
+perform gradient descent on, we'll instead utilize [Bayesian optimization](https://en.wikipedia.org/wiki/Bayesian_optimization) to tune the parameters.
 This can be done quite easily using the fantastic scikit-learn package:
 
 ```py
-PLACEHOLDER
+from multiple_counters_solution import estimate_mean
+from skopt import gp_minimize
+from skopt.space import Integer, Categorical
 
+NUM_ITERATIONS = 750
+
+search_space = [
+    Categorical([5, 10, 20], name="num_sub_counters"),
+    Integer(250, 2500, name="stage_1_length"),
+    Integer(250, 2500, name="stage_2_length"),
+    Integer(50, 500, name="secondary_stage_1_length"),
+    Integer(50, 500, name="secondary_stage_2_length"),
+]
+
+def objective(params):
+    num_sub_counters, stage_1_length, stage_2_length, \
+        secondary_stage_1_length, secondary_stage_2_length = params
+
+    return estimate_mean(NUM_ITERATIONS, 
+                         num_sub_counters, 
+                         stage_1_length, 
+                         stage_2_length, 
+                         secondary_stage_1_length, 
+                         secondary_stage_2_length
+    )
+
+result = gp_minimize(func=objective,
+    dimensions=search_space,
+    n_calls=100,
+    n_initial_points=10,
+    random_state=48
+)
+
+print(
+    f"Number of sub-counters: {result.x[0]}\n"
+    f"Stage 1 length:   {result.x[1]}\n"
+    f"Stage 2 length:   {result.x[2]} \n"
+    f"Subsequent stage 1 length:   {result.x[3]}\n"
+    f"Subsequent stage 2 length:   {result.x[4]}\n"
+)
 ```
 
 Output:
->
->
->
->
+> Number of sub-counters: 10 <br />
+> Stage 1 length: 2252 <br />
+> Stage 2 length: 1610 <br />
+> Subsequent stage 1 length: 266 <br />
+> Subsequent stage 2 length: 257 <br />
 
-Plugging X=x Y=y and Z=z back into the simulation snippet yields:
+Plugging these optimized parameters back into the simulation code with $10{,}000$ iterations yields:
+> Avg: 3,636 <br />
+> Min: 2,517 <br />
+> Max: 9,149 <br />
+> Standard Error of Mean: 6.3
 
-Thus, with proper parameter tuning, the multiple counters procedure cuts the expected time until the prisoners are free to just XXX days, or around ~ years. That's a $2$x improvement over the staged counter solution!
+Thus, with proper parameter tuning, the multiple counters procedure cuts the expected time until the prisoners are free to around $3{,}636$ days, or just under $10$ years. That's almost $2.5$x faster than the staged counter solution! <br /> <br />
 
-### Solution 5:
+## Conclusion
+PLACEHOLDER. While there are still plenty of optimizations we can apply to the above solution (), we've hit . For a measly $100-200$ days saved.. improvements to be madePLACEHOLDER. Some brief talk about extra optimizations, staged counter selection for multiple counters, multiple stages with increasing counts. Summary of the four solutions discussed.
 
