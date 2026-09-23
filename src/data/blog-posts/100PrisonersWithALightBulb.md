@@ -1,7 +1,7 @@
 ---
 title: "Puzzle: 100 Prisoners and a Light Bulb"
 slug: 100-prisoners-1-lightbulb
-publishDate: September 12, 2026
+publishDate: September 23, 2026
 description: One hundred prisoners have been newly ushered into prison. The warden tells them that starting tomorrow, each of them...
 ---
 
@@ -114,13 +114,13 @@ together to discuss their fate. Can they agree on a procedure that will guarante
 > Note: Everyone I've talked to who was familiar with this puzzle had only ever heard of solution #2. However, there exist much better solutions, which will be shown below!
 
 ## Solutions
-
 Solutions are presented in order of increasing complexity. 
 
 [Solution #1: Lucky Chunks](#solution-1-lucky-chunks) <br />
 [Solution #2: One Counting Prisoner](#solution-2-one-counting-prisoner) <br />
 [Solution #3: Staged Counter Selection](#solution-3-staged-counter-selection) <br />
-[Solution #4: Multiple Counters](#solution-4-multiple-counters) <br /> <br />
+[Solution #4: Multiple Counters](#solution-4-multiple-counters) <br /> 
+[Solution #4.5: Multiple Counters with Staged Counter Selection](#solution-45-multiple-counters-with-staged-counter-selection)<br /> <br />
 
 ### Solution 1: Lucky Chunks
 **Procedure**: <br />
@@ -442,8 +442,8 @@ The prisoners first define the following parameters:
 > $s_2'$: The length of subsequent stage 2s <br />
 > Note: $q$ can be derived from the value of $a$: $q$ = $\frac{100}{a} - 1$
 
-They then pick $a$ prisoners to be "sub-counters," one of which will also be the "main counter." The sub-counters keep track of how many prisoners they have counted so far, denoted $sub\_count$ and initialized to $0$. The main counter additionally keeps track of how many sub-counters they have counted, denoted $main\_count$ and also initialized to $0$. Each prisoner additionally keeps track of two more variables, $t_1$ and $t_2$, which represent the number of times they must turn the lightbulb on in each phase. Regular prisoners initialize $t_1$ to $1$, all other instances of $t_1$ and $t_2$ are initialized to $0$: <br /> <br />
-| Initial Variable Values per Prisoner Type | $t_1$ | $t_2$ | $sub\_count$ | $main\_count$ |
+They then pick $a$ prisoners to be "sub-counters," one of which will also be the "main counter." The sub-counters keep track of how many prisoners they have counted so far, denoted $count_{sub}$ and initialized to $0$. The main counter additionally keeps track of how many sub-counters they have counted, denoted $count_{main}$ and also initialized to $0$. Each prisoner additionally keeps track of two more variables, $t_1$ and $t_2$, which represent the number of times they must turn the lightbulb on in each phase. Regular prisoners initialize $t_1$ to $1$, all other instances of $t_1$ and $t_2$ are initialized to $0$: <br /> <br />
+| Initial Variable Values per Prisoner Type | $t_1$ | $t_2$ | $count_{sub}$ | $count_{main}$ |
 | ---| --- | --- | --- | --- |
 | Sub-counters / Main counter | $0$ | $0$ | $0$ | $0$ |
 | Regular prisoner | $1$ | $0$ | N/A | N/A
@@ -453,11 +453,11 @@ Once the setup is settled, Stages $1$ and $2$ are repeated in sequence until the
 
 - Stage $1$:
   - If any prisoner sees an OFF lightbulb and has a positive $t_1$, they turn the lightbulb ON and decrement $t_1$.
-  - If a sub-counter sees an ON lightbulb and has a $sub\_count$ less than $q$, they turn it OFF and increment $sub\_count$. If $sub\_count$ now equals $q$, they increment $t_2$.
+  - If a sub-counter sees an ON lightbulb and has a $count_{sub}$ less than $q$, they turn it OFF and increment $count_{sub}$. If $count_{sub}$ now equals $q$, they increment $t_2$.
   - If it is the last day of stage $1$ and the current prisoner still sees an ON lightbulb after executing any relevant actions above, they turn the lightbulb OFF and increment $t_1$.
 - Stage $2$:
   - If any prisoner sees an OFF lightbulb and has a positive $t_2$, they turn the lightbulb ON and decrement $t_2$.
-  - If the main counter sees an ON lightbulb, they turn the lightbulb OFF and increment $main\_count$. If $main\_count$ is now equal to $a$, they declare that all prisoners have visited the room.
+  - If the main counter sees an ON lightbulb, they turn the lightbulb OFF and increment $count_{main}$. If $count_{main}$ is now equal to $a$, they declare that all prisoners have visited the room.
   - If it is the last day of stage $2$ and the current prisoner still sees an ON lightbulb after executing any relevant actions above, they turn the lightbulb OFF and increment $t_2$.
 
 Intuitively, this procedure improves on the one counter solution by allowing multiple sub-counters to count prisoners during stage $1$. During stage $2$, the main counter counts the number of sub-counters who have counted their "quota" of $q$ prisoners. For the main counter to be sure that each prisoner has visited the room at least once, each sub-counter needs to count to $q$ in stage $1$, and the main counter needs to count to $a$ in stage $2$. With well-chosen parameters, this ends up taking significantly less time than a single counter counting to $100$.
@@ -648,6 +648,38 @@ Plugging these optimized parameters back into the simulation code with $10{,}000
 
 Thus, with proper parameter tuning, the multiple counters procedure cuts the expected time until the prisoners are free to around $3{,}636$ days, or just under $10$ years. That's almost $2.5$x faster than the staged counter solution! <br /> <br />
 
-## Conclusion
+### Solution 4.5: Multiple Counters with Staged Counter Selection
+This solution is an additional optimization on the *Multiple Counters* solution above - we adapt the staged counter selection procedure of solution $3$ to work with multiple counters. <br /> <br />
+**Procedure:** <br />
+The prisoners define the same parameters as the *Multiple Counters* solution, with the addition of $s_0$, the length of sub-stages in a newly introduced stage $0$. Each prisoner will also keep track of one additional variable, $count_{sub-roles}$, which tracks how many times the sub-counter role has been assigned to them. Each sub-stage will produce one sub-counter, so it follows that there are $a$ sub-stages in stage $0$. Stage $0$ occurs only once before the first iteration of stage $1$. During each sub-stage of stage $0$, the prisoners act as follows:
+- Day $1$:
+  - If a prisoner enters the room and the lightbulb is ON, they add $s_0 - 1$ to $t_1$, then assume a sub-counter role. To assume a sub-counter role, they transfer their value of $t_1$ to $count_{sub}$. They then increment $count_{sub-roles}$.
+  - After potentially executing the above, the prisoner does one of the following:
+    - If the prisoner is a sub-counter, they decrement $count_{sub}$ and turn the light ON. 
+    - If the prisoner has a positive $t_1$, they decrement $t_1$ and turn the light ON. 
+    - If the prisoner is neither a sub-counter nor has a positive $t_1$, they turn the light OFF and assume the role of a sub-counter (only the increment of $count_{sub-roles}$ is needed here).
+- Days $2$ through $s_0 - 1$:
+  - If a prisoner enters the room and the lightbulb is ON, they do one of the following:
+    - If they are a sub-counter, they decrement $count_{sub}$
+    - If they have a positive $t_1$, they decrement $t_1$
+    - If the prisoner is neither a sub-counter nor has a positive $t_1$, they add $d$ to $t_1$, where $d$ is the number of days that have passed in the current sub-stage. They then assume a sub-counter role (only the increment of $count_{sub-roles}$ is needed here)
+- Last Day of sub-stage:
+  - If a prisoner enters the room, the lightbulb is ON, and they are not currently a sub-counter, they add $s_0 - 1$ to $t_1$, then assume a sub-counter role (transfer their value of $t_1$ to $count_{sub}$, then increment $count_{sub-roles}$)
+
+Following stage $0$, the remainder of the procedure is identical to the *Multiple Counters* solution, with three small changes:
+1. If the first prisoner who enters the room after stage $0$ has completed sees an ON lightbulb, they turn it OFF, add $s_0 - 1$ to $t_1$, then assume a sub-counter role (transfer their value of $t_1$ to $count_{sub}$, then increment $count_{sub-roles}$). They then follow the rest of the *Multiple Counters* procedure as normal.
+2. Sub-counters now count up to $q \cdot count_{sub-roles}$
+3. Sub-counters now increment $t_2$ if $count_{sub} \bmod q = 0$. 
+
+Changes $2$ and $3$ are necessary because, in rare cases, a single prisoner can be assigned the role of sub-counter more than once. <br /> 
+
+The stage $0$ procedure is the warped, demented, and pure-evil twin sibling of the initial stage in the *Staged Counter Selection* solution. Nevertheless, the intuition for it stays the same - each sub-stage results in a single sub-counter with (hopefully) some amount of prisoners pre-counted. The complexity of stage $0$ arises from optimizations done in order to maximize the amount of pre-counted prisoners. Chief amongst these is giving sub-counters the ability to "loan" their counted prisoners to others. This happens whenever $count_{sub}$ is decremented. Loaning prisoners is beneficial because it increases the time for a new sub-counter to be selected in each sub-stage, thus increasing the expected number of pre-counted prisoners. One interesting thing to note is that a sub-counter can loan a prisoner even when their $count_{sub} = 0$ or negative. Since the total sum of counts possessed by the prisoners stays $100$, and each sub-counter must reach their quota before the main counter declares for victory, this is not a problem.
+<br /> <br />
+
+### Simulating the Procedure:
+
+## Conclusion:
+Some ideas that come to mind are varying the lengths of each sub-stage in stage 0, as earlier substages are more likely to run into more unique prisoners. The gains from this would be marginal though, so I'll leave that in the codebase.
+a sligth optimization, where we apply the staged counting idea of solution #3 to solution #4.
 PLACEHOLDER. While there are still plenty of optimizations we can apply to the above solution (), we've hit . For a measly $100-200$ days saved.. improvements to be madePLACEHOLDER. Some brief talk about extra optimizations, staged counter selection for multiple counters, multiple stages with increasing counts. Summary of the four solutions discussed.
 
