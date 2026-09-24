@@ -5,10 +5,20 @@ import mdx from '@astrojs/mdx'
 import remarkGfm from 'remark-gfm'
 import remarkSmartypants from 'remark-smartypants'
 import rehypeExternalLinks from 'rehype-external-links'
+import starlight from '@astrojs/starlight'
 
 export default defineConfig({
   site: 'https://blog.dkisanga.com',
-  integrations: [mdx()],
+  integrations: [
+    starlight({
+      title: 'DK Blog',
+      expressiveCode: {
+        themes: ['nord'],
+        useStarlightUiThemeColors: false,
+      },
+    }),
+    mdx(),
+  ],
   markdown: {
     shikiConfig: {
       theme: 'nord',
