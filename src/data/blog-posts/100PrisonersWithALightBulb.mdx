@@ -845,7 +845,7 @@ if __name__ == "__main__":
 #include <random>
 #include <vector>
 
-#include "multiple_counters_sim.h"
+#include "sim.h"
 
 struct Prisoner {
     int sub_count = 0;
@@ -952,7 +952,8 @@ double estimate_mean(const Config& config) {
     for (int i = 0; i < config.num_iterations; ++i) {
         sim_results.push_back(simulate_procedure(config));
     }
-    double mean = std::accumulate(sim_results.begin(), sim_results.end(), 0.0) / config.num_iterations;
+    double mean = std::accumulate(sim_results.begin(), sim_results.end(), 0.0) 
+        / config.num_iterations;
     double variance = std::accumulate(
         sim_results.begin(),
         sim_results.end(),
@@ -996,7 +997,7 @@ using the fantastic scikit-learn and dlib libraries respectively.
 <TabItem label="Python">
 ```py
 from types import SimpleNamespace
-from multiple_counters_sim import estimate_mean
+from sim import estimate_mean
 from skopt import gp_minimize
 from skopt.space import Integer, Categorical
 
@@ -1051,7 +1052,7 @@ print(
 </TabItem>
 <TabItem label="C++">
 ```cpp
-#include "multiple_counters_sim.h"
+#include "sim.h"
 
 #include <dlib/global_optimization.h>
 
@@ -1255,7 +1256,11 @@ def simulate_procedure(config):
             if not bulb_on and chosen_prisoner.t1 > 0:
                 bulb_on = True
                 chosen_prisoner.t1 -= 1
-            if bulb_on and chosen_prisoner.is_sub_counter() and chosen_prisoner.is_under_quota(sub_counter_quota):
+            if (
+                bulb_on 
+                and chosen_prisoner.is_sub_counter() 
+                and chosen_prisoner.is_under_quota(sub_counter_quota)
+            ):
                 bulb_on = False
                 chosen_prisoner.sub_count += 1
                 if chosen_prisoner.sub_count % sub_counter_quota == 0:
@@ -1313,7 +1318,7 @@ if __name__ == "__main__":
 #include <random>
 #include <vector>
 
-#include "multiple_counters_staged_counter_selection_sim.h"
+#include "sim.h"
 
 struct Prisoner {
     int sub_count = 0;
@@ -1418,7 +1423,9 @@ int simulate_procedure(const Config& config) {
                 bulb_on = true;
                 chosen_prisoner.t1 -= 1;
             }
-            if (bulb_on && chosen_prisoner.is_sub_counter() && chosen_prisoner.is_under_quota(sub_counter_quota)) {
+            if (bulb_on 
+                && chosen_prisoner.is_sub_counter() 
+                && chosen_prisoner.is_under_quota(sub_counter_quota)) {
                 bulb_on = false;
                 chosen_prisoner.sub_count += 1;
                 if (chosen_prisoner.sub_count % sub_counter_quota == 0) {
@@ -1465,7 +1472,8 @@ double estimate_mean(const Config& config) {
     for (int i = 0; i < config.num_iterations; ++i) {
         sim_results.push_back(simulate_procedure(config));
     }
-    double mean = std::accumulate(sim_results.begin(), sim_results.end(), 0.0) / config.num_iterations;
+    double mean = std::accumulate(sim_results.begin(), sim_results.end(), 0.0) 
+        / config.num_iterations;
     double variance = std::accumulate(
         sim_results.begin(),
         sim_results.end(),
@@ -1500,7 +1508,140 @@ Output:
 > Subsequent stage 1 length: 266 <br />
 > Subsequent stage 2 length: 257 <br />
 
+PLACEHOLDER
+<Tabs>
+<TabItem label="Python">
+```py
+from types import SimpleNamespace
+
+from sim import estimate_mean
+from skopt import gp_minimize
+from skopt.space import Integer, Categorical
+
+NUM_ITERATIONS = 100
+
+search_space = [
+    Categorical([10], name="num_sub_counters"),
+    Integer(3, 8, name="stage_0_sub_length"),
+    Integer(250, 2500, name="stage_1_length"),
+    Integer(250, 2500, name="stage_2_length"),
+    Integer(50, 500, name="secondary_stage_1_length"),
+    Integer(50, 500, name="secondary_stage_2_length"),
+]
+
+def build_config(params):
+    (
+        num_sub_counters,
+        stage_0_sub_length,
+        stage_1_length,
+        stage_2_length,
+        secondary_stage_1_length,
+        secondary_stage_2_length,
+    ) = params
+    return SimpleNamespace(
+        num_iterations=NUM_ITERATIONS,
+        num_prisoners=100,
+        num_sub_counters=num_sub_counters,
+        stage_0_sub_length=stage_0_sub_length,
+        stage_1_length=stage_1_length,
+        stage_2_length=stage_2_length,
+        secondary_stage_1_length=secondary_stage_1_length,
+        secondary_stage_2_length=secondary_stage_2_length,
+    )
+
+def objective(params):
+    config = build_config(params)
+    return estimate_mean(config)
+
+result = gp_minimize(
+    func=objective,
+    dimensions=search_space,
+    n_calls=50,
+    n_initial_points=5,
+    random_state=48,
+)
+
+print(
+    f"Number of sub-counters: {result.x[0]}\n"
+    f"Stage 0 sub length: {result.x[1]}\n"
+    f"Stage 1 length:   {result.x[2]}\n"
+    f"Stage 2 length:   {result.x[3]} \n"
+    f"Subsequent stage 1 length:   {result.x[4]}\n"
+    f"Subsequent stage 2 length:   {result.x[5]}\n"
+)
+```
+</TabItem>
+<TabItem label="C++">
+```cpp
+#include "sim.h"
+
+#include <dlib/global_optimization.h>
+
+#include <iomanip>
+#include <iostream>
+#include <vector>
+
+constexpr int NUM_ITERATIONS = 10000;
+constexpr int NUM_PRISONERS = 100;
+constexpr int NUM_SUB_COUNTERS = 10;
+constexpr int NUM_CALLS = 1000;
+
+double objective(dlib::matrix<double, 0, 1> x) {
+    Config config;
+    config.num_iterations = NUM_ITERATIONS;
+    config.num_sub_counters = NUM_SUB_COUNTERS;
+    config.stage_0_sub_length = static_cast<int>(x(0));
+    config.stage_1_length = static_cast<int>(x(1));
+    config.stage_2_length = static_cast<int>(x(2));
+    config.secondary_stage_1_length = static_cast<int>(x(3));
+    config.secondary_stage_2_length = static_cast<int>(x(4));
+
+    return estimate_mean(config);
+}
+
+int main() {
+    dlib::matrix<double, 0, 1> lower(5);
+    dlib::matrix<double, 0, 1> upper(5);
+    lower(0) = 3;
+    lower(1) = 250;
+    lower(2) = 250;
+    lower(3) = 50;
+    lower(4) = 50;
+    upper(0) = 5;
+    upper(1) = 3000;
+    upper(2) = 3000;
+    upper(3) = 500;
+    upper(4) = 500;
+    std::vector<bool> is_integer(5, true);
+    auto result = dlib::find_min_global(
+        objective,
+        lower,
+        upper,
+        is_integer,
+        dlib::max_function_calls(NUM_CALLS)
+    );
+    const auto& x = result.x;
+    std::cout << std::setprecision(0);
+    std::cout << "Number of sub-counters: " << NUM_SUB_COUNTERS << '\n';
+    std::cout << "Stage 0 sub length: " << static_cast<int>(x(0)) << '\n';
+    std::cout << "Stage 1 length: " << static_cast<int>(x(1)) << '\n';
+    std::cout << "Stage 2 length: " << static_cast<int>(x(2)) << '\n';
+    std::cout << "Subsequent stage 1 length: " << static_cast<int>(x(3)) << '\n';
+    std::cout << "Subsequent stage 2 length: " << static_cast<int>(x(4)) << '\n';
+    std::cout << "Estimated mean: " << result.y << '\n';
+
+    return 0;
+}
+```
+</TabItem>
+</Tabs>
+
+After optimizing their brains out, the prisoners have come up with a procedure that should free them in around XXX days, or just under YYY years!
+One additional potential tweak that comes to mind is to vary the lengths and quotas assigned to each sub-stage of stage $0$. 
+The idea here is that earlier substages are more likely than later substages to include prisoners that haven't been counted yet, 
+so they should probably be a little longer, and have their corresponding quotas be slightly higher.
+I can't imagine this would lower their expected escape time by more than ~$25$ days though, so I'll leave that exploration for another day (or to you, an inquisitive reader!)
 ## Conclusion:
-Some ideas that come to mind are varying the lengths of each sub-stage in stage 0, as earlier substages are more likely to run into more unique prisoners. The gains from this would be marginal though, so I'll leave that in the codebase.
-a sligth optimization, where we apply the staged counting idea of solution #3 to solution #4.
-PLACEHOLDER. While there are still plenty of optimizations we can apply to the above solution (), we've hit . For a measly $100-200$ days saved.. improvements to be madePLACEHOLDER. Some brief talk about extra optimizations, staged counter selection for multiple counters, multiple stages with increasing counts. Summary of the four solutions discussed.
+Whew, what a journey through the wonderful world of incremental optimization! All code snippets used to simulate / optimize
+each procedure can be found on my [github](https://github.com/KisangaDavid/BlogCodeSnippets/tree/main/100_prisoners_1_lightbulb). If you enjoy logic puzzles, 
+also make sure to check out my interactive puzzle site [TheRiddleMan.com](https://theriddleman.com)!
