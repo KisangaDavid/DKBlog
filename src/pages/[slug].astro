@@ -13,7 +13,11 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props
 const { title, description, publishDate } = post.data;
-const readingTimeEstimate = readingTime(post.body).text
+const noCodeBody = post.body.replace(
+  /```[\s\S]*?```/g,
+  ''
+);
+const readingTimeEstimate = readingTime(noCodeBody).text
 const { Content } = await render(post)
 ---
 

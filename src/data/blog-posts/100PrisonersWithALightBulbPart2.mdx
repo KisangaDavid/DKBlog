@@ -1,0 +1,1145 @@
+---
+title: "Puzzle: 100 Prisoners and a Light Bulb (Part 2)"
+slug: 100-prisoners-1-lightbulb-part-2
+publishDate: September 26, 2026
+description: 100 Prisoners and a Light Bulb... Part 2!
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<style is:global>{`
+    p {
+        margin-bottom: 0em;
+    }
+
+    table {
+        table-layout: auto;
+        border-collapse: collapse;
+        margin-inline: auto;
+    }
+
+    th,
+    td {
+        padding: 0.75rem;
+        border: 1px solid #738aa7;
+        text-align: left;
+    }
+
+    th {
+        font-weight: 600;
+    }
+
+    pre {
+        line-height: 0.9em;
+        display: block;
+        margin: 0 auto;
+    }
+
+    h2 {
+        margin-bottom: 1em;
+        font-size: 2em;
+    }
+
+    .caption-text {
+        font-size: 0.9em;
+        line-height: 1.5em;
+        text-align: center;
+        margin-right: 1em;
+        margin-left: 1em;
+        margin-top: 0em;
+        color: var(--text-secondary);
+    }
+
+    .centered-image img {
+        display: block;
+        margin: 0 auto;
+        margin-bottom: 0.7em;
+    }
+
+    .centered-image-presents img {
+        display: block;
+        margin: 0 auto 0.7em;
+        max-height: 32em;
+        max-width: 100%;
+        width: auto;
+        height: auto;
+        border-radius: 10px;
+    }
+
+    .with-border img {
+        border-radius: 8px;
+        border: 1px solid black;
+    }
+
+    .image-container {
+        display: flex;
+        gap: 0.5%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .image-container .double-image-and-caption {
+        display: flex;
+        width: 49.75%;
+        flex-direction: column;
+        margin-bottom: 0em;
+    }
+
+    .katex {
+        overflow-x: auto;
+    }
+
+    .katex .vlist a {
+        pointer-events: auto;
+        position: relative;
+        color: #3c3cc7;
+        z-index: 1;
+    }
+
+    starlight-tabs {
+        display: block;
+        background: #2e3440;
+        border-radius: 8px;
+        box-shadow: 0.2rem 0.2rem 0.2rem #00000066;
+        overflow: hidden;
+        margin-top: 1.2em;
+        color: #f8f8f2;
+    }
+
+    starlight-tabs [role='tablist'] {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        border-bottom: 2px solid #3b3e48;
+    }
+
+    starlight-tabs .tab {
+        margin: 0 0 -2px;
+    }
+
+    starlight-tabs .tab > [role='tab'] {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1.25rem;
+        color: #9ca3b5;
+        font-family: var(--font-family-sans);
+        font-size: 1rem;
+        line-height: 1.8;
+        text-decoration: none;
+        border-bottom: 2px solid transparent;
+    }
+
+    starlight-tabs .tab > [role='tab']:hover {
+        color: #d8dee9;
+    }
+
+    starlight-tabs .tab > [role='tab'][aria-selected='true'] {
+        color: #f8f8f2;
+        border-color: #8aa9d6;
+        font-weight: 600;
+    }
+
+    starlight-tabs .expressive-code {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    starlight-tabs .expressive-code .frame {
+        box-shadow: none !important;
+    }
+
+    starlight-tabs .expressive-code pre {
+        margin: 0 !important;
+    }
+
+    starlight-tabs .tablist-wrapper ~ [role='tabpanel'] {
+        margin-top: 0.5rem;
+    }
+
+    starlight-tabs .expressive-code pre > code {
+        padding-block-start: 0.5rem;
+    }
+
+`}</style>
+
+<div class="centered-image-presents">
+
+![Presents](../../assets/100PrisonersWithALightBulb.jpg)
+
+</div>
+
+## Intro
+This is a follow-up to my [previous post](https://blog.dkisanga.com/100-prisoners-1-lightbulb-part-1) on the $100$ Prisoners 
+and a Lightbulb puzzle. In this post, I'll discuss two additional solutions that drastically decrease the expected time until the prisoners are free.
+These solutions unfortunately have no closed-form representation that I could calculate, so we'll have to rely entirely on simulation for runtime analysis.
+
+## Solutions
+
+[Solution #4: Multiple Counters](#solution-4-multiple-counters) <br /> 
+[Solution #5: Multiple Counters with Staged Counter Selection](#solution-5-multiple-counters-with-staged-counter-selection)<br /> <br />
+
+### Solution 4: Multiple Counters
+
+**Procedure:** <br />
+The prisoners first define the following parameters:
+> $a$: The number of sub-counters <br />
+> $q$: The number of prisoners each sub-counter is responsible for counting <br />
+> $s_1$: The length of the first stage <br />
+> $s_2$: The length of the second stage <br />
+> $s_1'$: The length of subsequent stage 1s <br />
+> $s_2'$: The length of subsequent stage 2s <br />
+> Note: $q$ can be derived from the value of $a$: $q$ = $\frac{100}{a} - 1$
+
+They then pick $a$ prisoners to be "sub-counters," one of which will also be the "main counter." The sub-counters keep track of how many prisoners they have counted so far, denoted $count_{sub}$ and initialized to $0$. The main counter additionally keeps track of how many sub-counters they have counted, denoted $count_{main}$ and also initialized to $0$. Each prisoner additionally keeps track of two more variables, $t_1$ and $t_2$, which represent the number of times they must turn the lightbulb on in each phase. Regular prisoners initialize $t_1$ to $1$, all other instances of $t_1$ and $t_2$ are initialized to $0$: <br /> <br />
+| Initial Variable Values per Prisoner Type | $t_1$ | $t_2$ | $count_{sub}$ | $count_{main}$ |
+| ---| --- | --- | --- | --- |
+| Sub-counters / Main counter | $0$ | $0$ | $0$ | $0$ |
+| Regular prisoner | $1$ | $0$ | N/A | N/A
+<br />
+
+Once the setup is settled, Stages $1$ and $2$ are repeated in sequence until the head counter declares that all prisoners have visited the room. The lengths of stages $1$ and $2$ are denoted by $s_1$ and $s_2$ in the first iteration, and by $s_1'$ and $s_2'$ in all subsequent iterations. The prisoners act as follows during each stage:<br /> 
+
+- Stage $1$:
+  - If any prisoner sees an OFF lightbulb and has a positive $t_1$, they turn the lightbulb ON and decrement $t_1$.
+  - If a sub-counter sees an ON lightbulb and has a $count_{sub}$ less than $q$, they turn it OFF and increment $count_{sub}$. If $count_{sub}$ now equals $q$, they increment $t_2$.
+  - If it is the last day of stage $1$ and the current prisoner still sees an ON lightbulb after executing any relevant actions above, they turn the lightbulb OFF and increment $t_1$.
+- Stage $2$:
+  - If any prisoner sees an OFF lightbulb and has a positive $t_2$, they turn the lightbulb ON and decrement $t_2$.
+  - If the main counter sees an ON lightbulb, they turn the lightbulb OFF and increment $count_{main}$. If $count_{main}$ is now equal to $a$, they declare that all prisoners have visited the room.
+  - If it is the last day of stage $2$ and the current prisoner still sees an ON lightbulb after executing any relevant actions above, they turn the lightbulb OFF and increment $t_2$.
+
+Intuitively, this procedure improves on the one counter solution by allowing multiple sub-counters to count prisoners during stage $1$. During stage $2$, the main counter counts the number of sub-counters who have counted their "quota" of $q$ prisoners. For the main counter to be sure that each prisoner has visited the room at least once, each sub-counter needs to count to $q$ in stage $1$, and the main counter needs to count to $a$ in stage $2$. With well-chosen parameters, this ends up taking significantly less time than a single counter counting to $100$.
+
+Mathematically calculating the expected runtime of this procedure is quite difficult, if not impossible, so we rely entirely on simulation for runtime analysis.
+
+**Simulating the Procedure:**
+<Tabs>
+<TabItem label="Python">
+```py
+import random
+from types import SimpleNamespace
+
+CONFIG = SimpleNamespace(
+    num_iterations=10000,
+    num_prisoners=100,
+    num_sub_counters=10,
+    stage_1_length=2252,
+    stage_2_length=1810,
+    secondary_stage_1_length=266,
+    secondary_stage_2_length=257,
+)
+
+class Prisoner:
+    def __init__(self, is_main_counter, is_sub_counter):
+        self.sub_count = 0
+        self.main_count = 0
+        self.t1 = 1 if not is_sub_counter else 0
+        self.t2 = 0
+        self.is_main_counter = is_main_counter
+        self.is_sub_counter = is_sub_counter
+
+def setup_prisoners(config):
+    prisoners = []
+    sub_counters = random.sample(range(0, config.num_prisoners), config.num_sub_counters)
+    main_counter = sub_counters[0]
+    for i in range(0, config.num_prisoners):
+        is_sub_counter = False
+        is_main_counter = False
+        if i == main_counter:
+            is_main_counter = True
+        if i in sub_counters:
+            is_sub_counter = True
+        prisoners.append(Prisoner(is_main_counter, is_sub_counter))
+    return prisoners
+
+def simulate_procedure(config):
+    bulb_on = False
+    prisoner_list = setup_prisoners(config)
+    num_days_taken = 0
+    sub_counter_quota = config.num_prisoners // config.num_sub_counters - 1
+    stage_1_length = config.stage_1_length
+    stage_2_length = config.stage_2_length
+    while True:
+        for i in range(0, stage_1_length):
+            num_days_taken += 1
+            chosen_prisoner = prisoner_list[random.randrange(0, config.num_prisoners)]
+            if not bulb_on and chosen_prisoner.t1 > 0:
+                bulb_on = True
+                chosen_prisoner.t1 -= 1
+            if (
+                bulb_on
+                and chosen_prisoner.is_sub_counter
+                and chosen_prisoner.sub_count < sub_counter_quota
+            ):
+                bulb_on = False
+                chosen_prisoner.sub_count += 1
+                if chosen_prisoner.sub_count >= sub_counter_quota:
+                    chosen_prisoner.t2 += 1
+            if i == stage_1_length - 1:
+                if bulb_on:
+                    bulb_on = False
+                    chosen_prisoner.t1 += 1
+        for i in range(0, stage_2_length):
+            num_days_taken += 1
+            chosen_prisoner = prisoner_list[random.randrange(0, config.num_prisoners)]
+            if not bulb_on and chosen_prisoner.t2 > 0:
+                bulb_on = True
+                chosen_prisoner.t2 -= 1
+            if bulb_on and chosen_prisoner.is_main_counter:
+                bulb_on = False
+                chosen_prisoner.main_count += 1
+                if chosen_prisoner.main_count == config.num_sub_counters:
+                    return num_days_taken
+            if i == stage_2_length - 1:
+                if bulb_on:
+                    bulb_on = False
+                    chosen_prisoner.t2 += 1
+        stage_1_length = config.secondary_stage_1_length
+        stage_2_length = config.secondary_stage_2_length
+
+
+def estimate_mean(config):
+    sim_results = []
+    for _ in range(0, config.num_iterations):
+        sim_results.append(simulate_procedure(config))
+    mean = sum(sim_results) / config.num_iterations
+    std_dev = (sum((x - mean) ** 2 for x in sim_results) / config.num_iterations) ** 0.5
+    print(
+        f"Mean: {mean:.0f}\n"
+        f"Min: {min(sim_results)}\n"
+        f"Max: {max(sim_results)}\n"
+        f"Standard Error of Mean: {std_dev / config.num_iterations**0.5:.1f}"
+    )
+    return mean
+
+if __name__ == "__main__":
+    estimate_mean(CONFIG)
+```
+</TabItem>
+<TabItem label="C++">
+```cpp
+#include <algorithm>
+#include <cmath>
+#include <chrono>
+#include <iomanip>
+#include <iostream>
+#include <numeric>
+#include <random>
+#include <vector>
+
+#include "sim.h"
+
+struct Prisoner {
+    int sub_count = 0;
+    int main_count = 0;
+    int t1;
+    int t2 = 0;
+    bool is_main_counter;
+    bool is_sub_counter;
+
+    Prisoner(bool main_counter, bool sub_counter)
+        : t1(sub_counter ? 0 : 1),
+          is_main_counter(main_counter),
+          is_sub_counter(sub_counter) {}
+};
+
+Config config;
+std::mt19937 rng(std::random_device{}());
+std::uniform_int_distribution<int> prisoner_dist(0, config.num_prisoners - 1);
+
+std::vector<Prisoner> setup_prisoners(const Config& config) {
+    std::vector<int> indices(config.num_prisoners);
+    std::iota(indices.begin(), indices.end(), 0);
+    std::vector<int> sub_counters(config.num_sub_counters);
+    std::sample(
+        indices.begin(),
+        indices.end(),
+        sub_counters.begin(),
+        config.num_sub_counters,
+        rng
+    );
+    int main_counter = sub_counters[0];
+    std::vector<Prisoner> prisoners;
+    for (int i = 0; i < config.num_prisoners; ++i) {
+        bool is_sub_counter =
+            std::find(sub_counters.begin(), sub_counters.end(), i) != sub_counters.end();
+        bool is_main_counter = (i == main_counter);
+        prisoners.emplace_back(is_main_counter, is_sub_counter);
+    }
+    return prisoners;
+}
+
+int simulate_procedure(const Config& config) {
+    bool bulb_on = false;
+    std::vector<Prisoner> prisoner_list = setup_prisoners(config);
+    int num_days_taken = 0;
+    int sub_counter_quota = config.num_prisoners / config.num_sub_counters - 1;
+    int stage_1_length = config.stage_1_length;
+    int stage_2_length = config.stage_2_length;
+    while (true) {
+        for (int i = 0; i < stage_1_length; ++i) {
+            ++num_days_taken;
+            Prisoner& chosen_prisoner = prisoner_list[prisoner_dist(rng)];
+            if (!bulb_on && chosen_prisoner.t1 > 0) {
+                bulb_on = true;
+                --chosen_prisoner.t1;
+            }
+            if (bulb_on 
+                && chosen_prisoner.is_sub_counter 
+                && chosen_prisoner.sub_count < sub_counter_quota
+            ) {
+                bulb_on = false;
+                ++chosen_prisoner.sub_count;
+                if (chosen_prisoner.sub_count >= sub_counter_quota) {
+                    ++chosen_prisoner.t2;
+                }
+            }
+            if (i == stage_1_length - 1) {
+                if (bulb_on) {
+                    bulb_on = false;
+                    ++chosen_prisoner.t1;
+                }
+            }
+        }
+        for (int i = 0; i < stage_2_length; ++i) {
+            ++num_days_taken;
+            Prisoner& chosen_prisoner = prisoner_list[prisoner_dist(rng)];
+            if (!bulb_on && chosen_prisoner.t2 > 0) {
+                bulb_on = true;
+                --chosen_prisoner.t2;
+            }
+            if (bulb_on && chosen_prisoner.is_main_counter) {
+                bulb_on = false;
+                ++chosen_prisoner.main_count;
+                if (chosen_prisoner.main_count == config.num_sub_counters) {
+                    return num_days_taken;
+                }
+            }
+            if (i == stage_2_length - 1) {
+                if (bulb_on) {
+                    bulb_on = false;
+                    ++chosen_prisoner.t2;
+                }
+            }
+        }
+        stage_1_length = config.secondary_stage_1_length;
+        stage_2_length = config.secondary_stage_2_length;
+    }
+}
+
+double estimate_mean(const Config& config) {
+    auto start_time = std::chrono::steady_clock::now();
+    std::vector<int> sim_results;
+    sim_results.reserve(config.num_iterations);
+    for (int i = 0; i < config.num_iterations; ++i) {
+        sim_results.push_back(simulate_procedure(config));
+    }
+    double mean = std::accumulate(sim_results.begin(), sim_results.end(), 0.0) 
+        / config.num_iterations;
+    double variance = std::accumulate(
+        sim_results.begin(),
+        sim_results.end(),
+        0.0,
+        [mean](double acc, int x) {return acc + (x - mean) * (x - mean);}
+    );
+    double std_dev = std::sqrt(variance / (config.num_iterations - 1));
+    double standard_error = std_dev / std::sqrt(config.num_iterations);
+    auto [min, max] = std::minmax_element(sim_results.begin(), sim_results.end());
+    std::cout << std::fixed << std::setprecision(0);
+    std::cout << "Mean: " << mean << '\n';
+    std::cout << "Min: " << *min << '\n';
+    std::cout << "Max: " << *max << '\n';
+    std::cout << std::setprecision(1);
+    std::cout << "Standard Error of Mean: " << standard_error << '\n';
+    const auto elapsed = std::chrono::duration<double>(
+        std::chrono::steady_clock::now() - start_time
+    );
+    std::cout << std::setprecision(3) << "Runtime: " << elapsed.count() << " seconds\n";
+    return mean;
+}
+```
+</TabItem>
+</Tabs>
+> Mean: 5,616 <br />
+> Min: 2,760 <br />
+> Max: 16,763 <br />
+> Standard Error of Mean: 1.1
+
+As shown above, with $10$ sub-counters and all stage lengths being set to $100$ days, 
+the prisoners can expect to be free in roughly $5{,}616$ days, or $15.4$ years. We can further improve on this by 
+tweaking the parameters, i.e. the number of sub-counters and the length of each stage. 
+Since we lack a closed-form representation and don't have derivatives to 
+perform gradient descent on, we'll instead tune using [Bayesian optimization](https://en.wikipedia.org/wiki/Bayesian_optimization) 
+in the Python implementation, and try out the [MaxLIPO+TR](https://blog.dlib.net/2017/12/a-global-optimization-algorithm-worth.html)
+algorithm in the C++ implementation. Both of these methods can quite easily be incorporated into our existing simulations
+using the fantastic scikit-learn and dlib libraries respectively:
+
+<Tabs>
+<TabItem label="Python">
+```py
+from types import SimpleNamespace
+from sim import estimate_mean
+from skopt import gp_minimize
+from skopt.space import Integer, Categorical
+
+NUM_ITERATIONS = 750
+
+search_space = [
+    Categorical([5, 10, 20], name="num_sub_counters"),
+    Integer(250, 2500, name="stage_1_length"),
+    Integer(250, 2500, name="stage_2_length"),
+    Integer(50, 500, name="secondary_stage_1_length"),
+    Integer(50, 500, name="secondary_stage_2_length"),
+]
+
+def build_config(params):
+    (
+        num_sub_counters, 
+        stage_1_length, 
+        stage_2_length, 
+        secondary_stage_1_length, 
+        secondary_stage_2_length
+     ) = params
+    return SimpleNamespace(
+        num_iterations=NUM_ITERATIONS,
+        num_prisoners=100,
+        num_sub_counters=num_sub_counters,
+        stage_1_length=stage_1_length,
+        stage_2_length=stage_2_length,
+        secondary_stage_1_length=secondary_stage_1_length,
+        secondary_stage_2_length=secondary_stage_2_length,
+    )
+
+def objective(params):
+    config = build_config(params)
+    return estimate_mean(config)
+
+result = gp_minimize(
+    func=objective,
+    dimensions=search_space,
+    n_calls=10,
+    n_initial_points=10,
+    random_state=48,
+)
+
+print(
+    f"Number of sub-counters: {result.x[0]}\n"
+    f"Stage 1 length:   {result.x[1]}\n"
+    f"Stage 2 length:   {result.x[2]} \n"
+    f"Subsequent stage 1 length:   {result.x[3]}\n"
+    f"Subsequent stage 2 length:   {result.x[4]}\n"
+)
+```
+</TabItem>
+<TabItem label="C++">
+```cpp
+#include "sim.h"
+
+#include <dlib/global_optimization.h>
+
+#include <iomanip>
+#include <iostream>
+
+constexpr int NUM_ITERATIONS = 5000;
+constexpr int NUM_PRISONERS = 100;
+constexpr int NUM_SUB_COUNTERS = 10;
+constexpr int NUM_CALLS = 1000;
+
+double objective(dlib::matrix<double, 0, 1> x) {
+    Config config;
+    config.num_iterations = NUM_ITERATIONS;
+    config.num_prisoners = NUM_PRISONERS;
+    config.num_sub_counters = NUM_SUB_COUNTERS;
+    config.stage_1_length = static_cast<int>(x(0));
+    config.stage_2_length = static_cast<int>(x(1));
+    config.secondary_stage_1_length = static_cast<int>(x(2));
+    config.secondary_stage_2_length = static_cast<int>(x(3));
+
+    return estimate_mean(config);
+}
+
+int main() {
+    dlib::matrix<double, 0, 1> lower(4);
+    dlib::matrix<double, 0, 1> upper(4);
+    lower(0) = 200;
+    lower(1) = 200;
+    lower(2) = 50;
+    lower(3) = 50;
+    upper(0) = 3000;
+    upper(1) = 3000;
+    upper(2) = 500;
+    upper(3) = 500;
+    std::vector<bool> is_integer(4, true);
+    auto result = dlib::find_min_global(
+        objective,
+        lower,
+        upper,
+        is_integer,
+        dlib::max_function_calls(NUM_CALLS)
+    );
+    const auto& x = result.x;
+    const int stage_1_length = static_cast<int>(x(0));
+    const int stage_2_length = static_cast<int>(x(1));
+    const int secondary_stage_1_length = static_cast<int>(x(2));
+    const int secondary_stage_2_length = static_cast<int>(x(3));
+    std::cout << std::setprecision(0);
+    std::cout << "Number of sub-counters: " << NUM_SUB_COUNTERS << '\n';
+    std::cout << "Stage 1 length: " << stage_1_length << '\n';
+    std::cout << "Stage 2 length: " << stage_2_length << '\n';
+    std::cout << "Subsequent stage 1 length: " << secondary_stage_1_length << '\n';
+    std::cout << "Subsequent stage 2 length: " << secondary_stage_2_length << '\n';
+
+    return 0;
+}
+```
+</TabItem>
+</Tabs>
+> Number of sub-counters: 10 <br />
+> Stage 1 length: 2201 <br />
+> Stage 2 length: 1827 <br />
+> Subsequent stage 1 length: 269 <br />
+> Subsequent stage 2 length: 354 <br />
+
+Plugging these optimized parameters back into the simulation code yields:
+> Avg: 3,620 <br />
+> Min: 2,433 <br />
+> Max: 10,186 <br />
+> Standard Error of Mean: 0.7
+
+Thus, with proper parameter tuning, this procedure cuts the expected time until the prisoners are free to $3{,}620$ days, or just under $10$ years. That's almost $2.5$x faster than the [*Staged Counter Selection*](https://blog.dkisanga.com/100-prisoners-1-lightbulb-part-1#solution-3-staged-counter-selection) solution discussed part one! <br /> <br />
+
+### Solution 5: Multiple Counters with Staged Counter Selection
+This solution is an adaptation of the [*Staged Counter Selection*](https://blog.dkisanga.com/100-prisoners-1-lightbulb-part-1#solution-3-staged-counter-selection) procedure discussed in part one, modified to work with multiple counters. <br /> <br />
+**Procedure:** <br />
+The prisoners define the same parameters as the *Multiple Counters* solution, with the addition of $s_0$, the length of sub-stages in a newly introduced stage $0$. Each prisoner will also keep track of one additional variable, $count_{sub-roles}$, which tracks how many times the sub-counter role has been assigned to them. Each sub-stage will produce one sub-counter, so it follows that there are $a$ sub-stages in stage $0$. Stage $0$ occurs only once before the first iteration of stage $1$. During each sub-stage of stage $0$, the prisoners act as follows:
+- Day $1$:
+  - If a prisoner enters the room and the lightbulb is ON, they add $s_0 - 1$ to $t_1$, then assume a sub-counter role. To assume a sub-counter role, they transfer their value of $t_1$ to $count_{sub}$. They then increment $count_{sub-roles}$.
+  - After potentially executing the above, the prisoner does one of the following:
+    - If the prisoner is a sub-counter, they decrement $count_{sub}$ and turn the light ON. 
+    - If the prisoner has a positive $t_1$, they decrement $t_1$ and turn the light ON. 
+    - If the prisoner is neither a sub-counter nor has a positive $t_1$, they turn the light OFF and assume the role of a sub-counter (only the increment of $count_{sub-roles}$ is needed here).
+- Days $2$ through $s_0 - 1$:
+  - If a prisoner enters the room and the lightbulb is ON, they do one of the following:
+    - If they are a sub-counter, they decrement $count_{sub}$
+    - If they have a positive $t_1$, they decrement $t_1$
+    - If the prisoner is neither a sub-counter nor has a positive $t_1$, they add $d$ to $t_1$, where $d$ is the number of days that have passed in the current sub-stage. They then assume a sub-counter role (only the increment of $count_{sub-roles}$ is needed here)
+- Last Day of sub-stage:
+  - If a prisoner enters the room, the lightbulb is ON, and they are not currently a sub-counter, they add $s_0 - 1$ to $t_1$, then assume a sub-counter role (transfer their value of $t_1$ to $count_{sub}$, then increment $count_{sub-roles}$)
+
+Following stage $0$, the remainder of the procedure is identical to the *Multiple Counters* solution, with three small changes:
+1. If the first prisoner who enters the room after stage $0$ has completed sees an ON lightbulb, they turn it OFF, add $s_0 - 1$ to $t_1$, then assume a sub-counter role (transfer their value of $t_1$ to $count_{sub}$, then increment $count_{sub-roles}$). They then follow the rest of the *Multiple Counters* procedure as normal.
+2. Sub-counters now count up to $q \cdot count_{sub-roles}$
+3. Sub-counters now increment $t_2$ if $count_{sub} \bmod q = 0$. 
+
+Changes $2$ and $3$ are necessary because, in rare cases, a single prisoner can be assigned the role of sub-counter more than once. <br /> 
+The stage $0$ procedure is the warped, demented, and pure-evil twin sibling of the initial stage in the *Staged Counter Selection* solution. Nevertheless, the intuition for it stays the same - each sub-stage results in a single sub-counter with (hopefully) some amount of prisoners pre-counted. The complexity of stage $0$ arises from optimizations done in order to maximize the amount of pre-counted prisoners. Chief amongst these is giving sub-counters the ability to "loan" their counted prisoners to others. This happens whenever $count_{sub}$ is decremented. Loaning prisoners is beneficial because it increases the time for a new sub-counter to be selected in each sub-stage, thus increasing the expected number of pre-counted prisoners. One interesting thing to note is that a sub-counter can loan a prisoner even when their $count_{sub} = 0$ or negative. Since the total sum of counts possessed by the prisoners stays $100$, and each sub-counter must reach their quota before the main counter declares for victory, this is not a problem.
+<br /> <br />
+
+### Simulating the Procedure:
+<Tabs>
+<TabItem label="Python">
+```py
+import random
+from types import SimpleNamespace
+
+CONFIG = SimpleNamespace(
+    num_iterations=2000,
+    num_prisoners=100,
+    num_sub_counters=10,
+    stage_0_sub_length=4,
+    stage_1_length=2000,
+    stage_2_length=1500,
+    secondary_stage_1_length=300,
+    secondary_stage_2_length=300,
+)
+
+class Prisoner:
+    def __init__(self):
+        self.sub_count = 0
+        self.main_count = 0
+        self.t1 = 1
+        self.t2 = 0
+        self.is_main_counter = False
+        self.num_sub_counter_tokens = 0
+
+    def convert_to_sub_counter(self, sub_counter_quota, stage=1):
+        self.sub_count += self.t1
+        self.t1 = 0
+        self.num_sub_counter_tokens += 1
+        if self.sub_count >= sub_counter_quota:
+            self.t2 += 1
+        if stage == 0:
+            self.is_main_counter = True
+        
+    def is_sub_counter(self):
+        return self.num_sub_counter_tokens > 0
+
+    def is_under_quota(self, sub_counter_quota):
+        return self.sub_count < self.num_sub_counter_tokens * sub_counter_quota
+
+def setup_prisoners(config):
+    return [Prisoner() for _ in range(config.num_prisoners)]
+
+def run_stage_zero(prisoner_list, sub_counter_quota, config):
+    bulb_on = False
+    for stage in range(config.num_sub_counters):
+        for day in range(config.stage_0_sub_length):
+            chosen_prisoner = prisoner_list[random.randrange(0, config.num_prisoners)]
+            if day == 0:
+                if bulb_on:
+                    chosen_prisoner.t1 += config.stage_0_sub_length - 1
+                    chosen_prisoner.convert_to_sub_counter(sub_counter_quota, stage)
+                if chosen_prisoner.is_sub_counter():
+                    chosen_prisoner.sub_count -= 1
+                    bulb_on = True
+                elif chosen_prisoner.t1 > 0:
+                    chosen_prisoner.t1 -= 1
+                    bulb_on = True
+                else:
+                    bulb_on = False
+                    chosen_prisoner.convert_to_sub_counter(sub_counter_quota, stage)
+            elif day == config.stage_0_sub_length - 1:
+                if bulb_on and not chosen_prisoner.is_sub_counter():
+                    chosen_prisoner.t1 += config.stage_0_sub_length - 1
+                    chosen_prisoner.convert_to_sub_counter(sub_counter_quota, stage)
+                    bulb_on = False
+            else:
+                if bulb_on:
+                    if chosen_prisoner.is_sub_counter():
+                        chosen_prisoner.sub_count -= 1
+                    elif chosen_prisoner.t1 > 0:
+                        chosen_prisoner.t1 -= 1
+                    else:
+                        bulb_on = False
+                        chosen_prisoner.t1 += day
+                        chosen_prisoner.convert_to_sub_counter(sub_counter_quota, stage)
+    return bulb_on
+
+def simulate_procedure(config):
+    sub_counter_quota = config.num_prisoners // config.num_sub_counters
+    prisoner_list = setup_prisoners(config)
+    bulb_on = run_stage_zero(prisoner_list, sub_counter_quota, config)
+    num_days_taken = config.stage_0_sub_length * config.num_sub_counters
+    next_prisoner_is_counter = bulb_on
+    stage_1_length = config.stage_1_length
+    stage_2_length = config.stage_2_length
+    while True:
+        for i in range(0, stage_1_length):
+            num_days_taken += 1
+            chosen_prisoner = prisoner_list[random.randrange(0, config.num_prisoners)]
+            if bulb_on and next_prisoner_is_counter:
+                chosen_prisoner.t1 += config.stage_0_sub_length - 1
+                chosen_prisoner.convert_to_sub_counter(sub_counter_quota)
+                next_prisoner_is_counter = False
+                bulb_on = False
+            if not bulb_on and chosen_prisoner.t1 > 0:
+                bulb_on = True
+                chosen_prisoner.t1 -= 1
+            if (bulb_on 
+                and chosen_prisoner.is_sub_counter() 
+                and chosen_prisoner.is_under_quota(sub_counter_quota)
+            ):
+                bulb_on = False
+                chosen_prisoner.sub_count += 1
+                if chosen_prisoner.sub_count % sub_counter_quota == 0:
+                    chosen_prisoner.t2 += 1
+            if i == stage_1_length - 1:
+                if bulb_on:
+                    bulb_on = False
+                    chosen_prisoner.t1 += 1
+        for i in range(0, stage_2_length):
+            num_days_taken += 1
+            chosen_prisoner = prisoner_list[
+                random.randrange(0, config.num_prisoners)
+            ]
+            if not bulb_on and chosen_prisoner.t2 > 0:
+                bulb_on = True
+                chosen_prisoner.t2 -= 1
+            if bulb_on and chosen_prisoner.is_main_counter:
+                bulb_on = False
+                chosen_prisoner.main_count += 1
+                if chosen_prisoner.main_count == config.num_sub_counters:
+                    return num_days_taken
+            if i == stage_2_length - 1:
+                if bulb_on:
+                    bulb_on = False
+                    chosen_prisoner.t2 += 1
+        stage_1_length = config.secondary_stage_1_length
+        stage_2_length = config.secondary_stage_2_length
+
+def estimate_mean(config):
+    sim_results = []
+    for _ in range(config.num_iterations):
+        sim_results.append(simulate_procedure(config))
+    mean = sum(sim_results) / config.num_iterations
+    std_dev = (sum((x - mean) ** 2 for x in sim_results) / (config.num_iterations - 1))**0.5
+    print(
+        f"Mean: {mean:.0f}\n"
+        f"Min: {min(sim_results)}\n"
+        f"Max: {max(sim_results)}\n"
+        f"Standard Error of Mean: {std_dev / config.num_iterations**0.5:.1f}"
+    )
+    return mean
+
+if __name__ == "__main__":
+    estimate_mean(CONFIG)
+```
+</TabItem>
+<TabItem label="C++">
+```cpp
+#include <algorithm>
+#include <cmath>
+#include <chrono>
+#include <iomanip>
+#include <iostream>
+#include <numeric>
+#include <random>
+#include <vector>
+
+#include "sim.h"
+
+struct Prisoner {
+    int sub_count = 0;
+    int main_count = 0;
+    int t1 = 1;
+    int t2 = 0;
+    bool is_main_counter = false;
+    int num_sub_counter_tokens = 0;
+
+    void convert_to_sub_counter(int sub_counter_quota, int stage = 1) {
+        int old_quotas_reached = sub_count / sub_counter_quota;
+        sub_count += t1;
+        int new_quotas_reached = sub_count / sub_counter_quota;
+        t1 = 0;
+        num_sub_counter_tokens += 1;
+        t2 += new_quotas_reached - old_quotas_reached;
+        if (stage == 0) {
+            is_main_counter = true;
+        }
+    }
+
+    bool is_sub_counter() const {
+        return num_sub_counter_tokens > 0;
+    }
+
+    bool is_under_quota(int sub_counter_quota) const {
+        return sub_count < num_sub_counter_tokens * sub_counter_quota;
+    }
+};
+
+int num_prisoners = Config().num_prisoners;
+std::mt19937 rng(std::random_device{}());
+std::uniform_int_distribution<int> dist(0, num_prisoners - 1);
+
+std::vector<Prisoner> setup_prisoners(const Config& config) {
+    std::vector<Prisoner> prisoner_list(config.num_prisoners);
+    return prisoner_list;
+}
+
+bool run_stage_zero(std::vector<Prisoner>& prisoner_list, int sub_counter_quota, const Config& config) {
+    bool bulb_on = false;
+    for (int stage = 0; stage < config.num_sub_counters; ++stage) {
+        for (int day = 0; day < config.stage_0_sub_length; ++day) {
+            Prisoner& chosen_prisoner = prisoner_list[dist(rng)];
+            if (day == 0) {
+                if (bulb_on) {
+                    chosen_prisoner.t1 += config.stage_0_sub_length - 1;
+                    chosen_prisoner.convert_to_sub_counter(sub_counter_quota, stage);
+                }
+                if (chosen_prisoner.is_sub_counter()) {
+                    chosen_prisoner.sub_count -= 1;
+                    bulb_on = true;
+                } else if (chosen_prisoner.t1 > 0) {
+                    chosen_prisoner.t1 -= 1;
+                    bulb_on = true;
+                } else {
+                    bulb_on = false;
+                    chosen_prisoner.convert_to_sub_counter(sub_counter_quota, stage);
+                }
+            } else if (day == config.stage_0_sub_length - 1) {
+                if (bulb_on && !chosen_prisoner.is_sub_counter()) {
+                    chosen_prisoner.t1 += config.stage_0_sub_length - 1;
+                    chosen_prisoner.convert_to_sub_counter(sub_counter_quota, stage);
+                    bulb_on = false;
+                }
+            } else {
+                if (bulb_on) {
+                    if (chosen_prisoner.is_sub_counter()) {
+                        chosen_prisoner.sub_count -= 1;
+                    } else if (chosen_prisoner.t1 > 0) {
+                        chosen_prisoner.t1 -= 1;
+                    } else {
+                        bulb_on = false;
+                        chosen_prisoner.t1 += day;
+                        chosen_prisoner.convert_to_sub_counter(sub_counter_quota, stage);
+                    }
+                }
+            }
+        }
+    }
+    return bulb_on;
+}
+
+int simulate_procedure(const Config& config) {
+    int sub_counter_quota = config.num_prisoners / config.num_sub_counters;
+    std::vector<Prisoner> prisoner_list = setup_prisoners(config);
+    bool bulb_on = run_stage_zero(prisoner_list, sub_counter_quota, config);
+    int num_days_taken = config.stage_0_sub_length * config.num_sub_counters;
+    bool next_prisoner_is_counter = bulb_on;
+    int stage_1_length = config.stage_1_length;
+    int stage_2_length = config.stage_2_length;
+    while (true) {
+        for (int i = 0; i < stage_1_length; ++i) {
+            num_days_taken += 1;
+            Prisoner& chosen_prisoner = prisoner_list[dist(rng)];
+            if (bulb_on && next_prisoner_is_counter) {
+                chosen_prisoner.t1 += config.stage_0_sub_length - 1;
+                chosen_prisoner.convert_to_sub_counter(sub_counter_quota);
+                next_prisoner_is_counter = false;
+                bulb_on = false;
+            }
+            if (!bulb_on && chosen_prisoner.t1 > 0) {
+                bulb_on = true;
+                chosen_prisoner.t1 -= 1;
+            }
+            if (bulb_on 
+                && chosen_prisoner.is_sub_counter() 
+                && chosen_prisoner.is_under_quota(sub_counter_quota)
+            ) {
+                bulb_on = false;
+                chosen_prisoner.sub_count += 1;
+                if (chosen_prisoner.sub_count % sub_counter_quota == 0) {
+                    chosen_prisoner.t2 += 1;
+                }
+            }
+            if (i == stage_1_length - 1) {
+                if (bulb_on) {
+                    bulb_on = false;
+                    chosen_prisoner.t1 += 1;
+                }
+            }
+        }
+        for (int i = 0; i < stage_2_length; ++i) {
+            num_days_taken += 1;
+            Prisoner& chosen_prisoner = prisoner_list[dist(rng)];
+            if (!bulb_on && chosen_prisoner.t2 > 0) {
+                bulb_on = true;
+                chosen_prisoner.t2 -= 1;
+            }
+            if (bulb_on && chosen_prisoner.is_main_counter) {
+                bulb_on = false;
+                chosen_prisoner.main_count += 1;
+                if (chosen_prisoner.main_count == config.num_sub_counters) {
+                    return num_days_taken;
+                }
+            }
+            if (i == stage_2_length - 1) {
+                if (bulb_on) {
+                    bulb_on = false;
+                    chosen_prisoner.t2 += 1;
+                }
+            }
+        }
+        stage_1_length = config.secondary_stage_1_length;
+        stage_2_length = config.secondary_stage_2_length;
+    }
+}
+
+double estimate_mean(const Config& config) {
+    auto start_time = std::chrono::steady_clock::now();
+    std::vector<int> sim_results;
+    sim_results.reserve(config.num_iterations);
+    for (int i = 0; i < config.num_iterations; ++i) {
+        sim_results.push_back(simulate_procedure(config));
+    }
+    double mean = std::accumulate(sim_results.begin(), sim_results.end(), 0.0) 
+        / config.num_iterations;
+    double variance = std::accumulate(
+        sim_results.begin(),
+        sim_results.end(),
+        0.0,
+        [mean](double acc, int x) {return acc + (x - mean) * (x - mean);}
+    );
+    double std_dev = std::sqrt(variance / (config.num_iterations - 1));
+    double standard_error = std_dev / std::sqrt(config.num_iterations);
+    auto [min, max] = std::minmax_element(sim_results.begin(), sim_results.end());
+    std::cout << std::fixed << "Mean: " << std::setprecision(0) << mean << '\n';
+    std::cout << "Min: " << *min << '\n';
+    std::cout << "Max: " << *max << '\n';
+    std::cout << "Standard Error of Mean: " << std::setprecision(1) << standard_error << '\n';
+     const auto elapsed = std::chrono::duration<double>(
+        std::chrono::steady_clock::now() - start_time
+    );
+    std::cout << std::setprecision(3) << "Runtime: " << elapsed.count() << " seconds\n";
+    return mean;
+}
+
+int main() {
+    Config config;
+    estimate_mean(config);
+}
+```
+</TabItem>
+</Tabs>
+<br />
+Similar to before, we first optimize over our parameters:
+<Tabs>
+<TabItem label="Python">
+```py
+from types import SimpleNamespace
+
+from sim import estimate_mean
+from skopt import gp_minimize
+from skopt.space import Integer, Categorical
+
+NUM_ITERATIONS = 1000
+
+search_space = [
+    Categorical([10], name="num_sub_counters"),
+    Integer(3, 8, name="stage_0_sub_length"),
+    Integer(250, 2500, name="stage_1_length"),
+    Integer(250, 2500, name="stage_2_length"),
+    Integer(50, 500, name="secondary_stage_1_length"),
+    Integer(50, 500, name="secondary_stage_2_length"),
+]
+
+def build_config(params):
+    (
+        num_sub_counters,
+        stage_0_sub_length,
+        stage_1_length,
+        stage_2_length,
+        secondary_stage_1_length,
+        secondary_stage_2_length,
+    ) = params
+    return SimpleNamespace(
+        num_iterations=NUM_ITERATIONS,
+        num_prisoners=100,
+        num_sub_counters=num_sub_counters,
+        stage_0_sub_length=stage_0_sub_length,
+        stage_1_length=stage_1_length,
+        stage_2_length=stage_2_length,
+        secondary_stage_1_length=secondary_stage_1_length,
+        secondary_stage_2_length=secondary_stage_2_length,
+    )
+
+def objective(params):
+    config = build_config(params)
+    return estimate_mean(config)
+
+result = gp_minimize(
+    func=objective,
+    dimensions=search_space,
+    n_calls=100,
+    n_initial_points=5,
+    random_state=48,
+)
+
+print(
+    f"Number of sub-counters: {result.x[0]}\n"
+    f"Stage 0 sub-lengths: {result.x[1]}\n"
+    f"Stage 1 length:   {result.x[2]}\n"
+    f"Stage 2 length:   {result.x[3]} \n"
+    f"Subsequent stage 1 length:   {result.x[4]}\n"
+    f"Subsequent stage 2 length:   {result.x[5]}\n"
+)
+```
+</TabItem>
+<TabItem label="C++">
+```cpp
+#include "sim.h"
+
+#include <dlib/global_optimization.h>
+
+#include <iomanip>
+#include <iostream>
+#include <vector>
+
+constexpr int NUM_ITERATIONS = 10000;
+constexpr int NUM_PRISONERS = 100;
+constexpr int NUM_SUB_COUNTERS = 10;
+constexpr int NUM_CALLS = 1000;
+
+double objective(dlib::matrix<double, 0, 1> x) {
+    Config config;
+    config.num_iterations = NUM_ITERATIONS;
+    config.num_sub_counters = NUM_SUB_COUNTERS;
+    config.stage_0_sub_length = static_cast<int>(x(0));
+    config.stage_1_length = static_cast<int>(x(1));
+    config.stage_2_length = static_cast<int>(x(2));
+    config.secondary_stage_1_length = static_cast<int>(x(3));
+    config.secondary_stage_2_length = static_cast<int>(x(4));
+
+    return estimate_mean(config);
+}
+
+int main() {
+    dlib::matrix<double, 0, 1> lower(5);
+    dlib::matrix<double, 0, 1> upper(5);
+    lower(0) = 3;
+    lower(1) = 250;
+    lower(2) = 250;
+    lower(3) = 50;
+    lower(4) = 50;
+    upper(0) = 5;
+    upper(1) = 3000;
+    upper(2) = 3000;
+    upper(3) = 500;
+    upper(4) = 500;
+    std::vector<bool> is_integer(5, true);
+    auto result = dlib::find_min_global(
+        objective,
+        lower,
+        upper,
+        is_integer,
+        dlib::max_function_calls(NUM_CALLS)
+    );
+    const auto& x = result.x;
+    std::cout << std::setprecision(0);
+    std::cout << "Number of sub-counters: " << NUM_SUB_COUNTERS << '\n';
+    std::cout << "Stage 0 sub-lengths: " << static_cast<int>(x(0)) << '\n';
+    std::cout << "Stage 1 length: " << static_cast<int>(x(1)) << '\n';
+    std::cout << "Stage 2 length: " << static_cast<int>(x(2)) << '\n';
+    std::cout << "Subsequent stage 1 length: " << static_cast<int>(x(3)) << '\n';
+    std::cout << "Subsequent stage 2 length: " << static_cast<int>(x(4)) << '\n';
+    std::cout << "Estimated mean: " << result.y << '\n';
+
+    return 0;
+}
+```
+</TabItem>
+</Tabs>
+> Number of sub-counters: 10 <br />
+> Stage 0 sub-lengths: 4 <br />
+> Stage 1 length: 1931 <br />
+> Stage 2 length: 1717 <br />
+> Subsequent stage 1 length: 380 <br />
+> Subsequent stage 2 length: 494 <br />
+
+Plugging these optimized parameters back into the simulation code yields:
+
+> Avg: 3,458 <br />
+> Min: 2,178 <br />
+> Max: 10,326 <br />
+> Standard Error of Mean: 0.7
+
+After optimizing their brains out, the prisoners manage to shave off an additional $162$ days off of their expected escape time, bringing the total down to $3{,}458$ days.
+One additional optimization that comes to mind is to vary the lengths and quotas assigned to each sub-stage of stage $0$. 
+The idea here is that earlier substages are more likely than later substages to include prisoners that haven't been counted yet, 
+so they should a little longer and have their corresponding quotas be slightly higher.
+I can't imagine this would lower the prisoners' expected escape time by more than ~$25$ days though, so I'll leave that exploration for another day (or to you, an inquisitive reader!)
+
+## Conclusion:
+Whew, what a journey through the wonderful world of incremental optimization! All code snippets used to simulate / optimize
+each procedure can be found on my [github](https://github.com/KisangaDavid/BlogCodeSnippets/tree/main/100_prisoners_1_lightbulb). If you enjoy logic puzzles, 
+also make sure to check out my interactive puzzle site [TheRiddleMan.com](https://theriddleman.com)! <br /> <br />
+
+### Summary of Solutions:
+| Solution Name | Closed-form Runtime Expression | Expected Runtime | 
+| ---| --- | --- | 
+| Lucky Chunks | $100^{101}/100!$ | $1.07 \cdot 10^{44}$ | 
+| One Counting Prisoner | $1 + 100H_{99} + 9{,}900$ | $10{,}419$ | 
+| Staged Counter Selection | $10{,}100 + 100\left(H_{99} - 1.01 +  - \frac{101}{100}\sum_{j=2}^{99}\left(\frac{100!}{(100^j)(100-j)!}\right) \right)$ | $9{,}385$ 
+| Multiple Counters | N/A | $3{,}620$ |
+| Multiple Counters with Staged Counter Selection | N/A | $3{,}458$ | 
