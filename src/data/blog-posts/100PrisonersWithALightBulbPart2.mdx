@@ -12,21 +12,50 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
         margin-bottom: 0em;
     }
 
-    table {
-        table-layout: auto;
-        border-collapse: collapse;
-        margin-inline: auto;
+    .table-scroll {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
     }
 
-    th,
-    td {
+    .table-scroll table {
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse;  
+        margin-inline: 0;
+    }
+
+    .table-scroll th,
+    .table-scroll td {
+        overflow: hidden;
         padding: 0.75rem;
         border: 1px solid #738aa7;
         text-align: left;
     }
 
-    th {
-        font-weight: 600;
+    .table-scroll td .katex {
+        display: block;
+        max-width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+
+    .table-scroll td .katex {
+        scrollbar-width: thin;
+        scrollbar-color: #738aa7 transparent;
+    }
+
+    .table-scroll td .katex::-webkit-scrollbar {
+        height: 4px;
+    }
+
+    .table-scroll td .katex::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .table-scroll td .katex::-webkit-scrollbar-thumb {
+        background: #738aa7;
+        border-radius: 999px;
     }
 
     pre {
@@ -192,10 +221,16 @@ The prisoners first define the following parameters:
 > Note: $q$ can be derived from the value of $a$: $q$ = $\frac{100}{a} - 1$
 
 They then pick $a$ prisoners to be "sub-counters," one of which will also be the "main counter." The sub-counters keep track of how many prisoners they have counted so far, denoted $count_{sub}$ and initialized to $0$. The main counter additionally keeps track of how many sub-counters they have counted, denoted $count_{main}$ and also initialized to $0$. Each prisoner additionally keeps track of two more variables, $t_1$ and $t_2$, which represent the number of times they must turn the lightbulb on in each phase. Regular prisoners initialize $t_1$ to $1$, all other instances of $t_1$ and $t_2$ are initialized to $0$: <br /> <br />
+
+<div class="table-scroll">
+
 | Initial Variable Values per Prisoner Type | $t_1$ | $t_2$ | $count_{sub}$ | $count_{main}$ |
 | ---| --- | --- | --- | --- |
 | Sub-counters / Main counter | $0$ | $0$ | $0$ | $0$ |
-| Regular prisoner | $1$ | $0$ | N/A | N/A
+| Regular prisoner | $1$ | $0$ | N/A | N/A |
+
+</div>
+
 <br />
 
 Once the setup is settled, Stages $1$ and $2$ are repeated in sequence until the head counter declares that all prisoners have visited the room. The lengths of stages $1$ and $2$ are denoted by $s_1$ and $s_2$ in the first iteration, and by $s_1'$ and $s_2'$ in all subsequent iterations. The prisoners act as follows during each stage:<br /> 
@@ -1136,10 +1171,15 @@ each procedure can be found on my [github](https://github.com/KisangaDavid/BlogC
 also make sure to check out my interactive puzzle site [TheRiddleMan.com](https://theriddleman.com)! <br /> <br />
 
 ### Summary of Solutions:
+
+<div class="table-scroll">
+
 | Solution Name | Closed-form Runtime Expression | Expected Runtime | 
 | ---| --- | --- | 
 | Lucky Chunks | $100^{101}/100!$ | $1.07 \cdot 10^{44}$ | 
 | One Counting Prisoner | $1 + 100H_{99} + 9{,}900$ | $10{,}419$ | 
-| Staged Counter Selection | $10{,}100 + 100\left(H_{99} - 1.01 +  - \frac{101}{100}\sum_{j=2}^{99}\left(\frac{100!}{(100^j)(100-j)!}\right) \right)$ | $9{,}385$ 
+| Staged Counter Selection | $10{,}100 + 100\left(H_{99} - 1.01 +  - \frac{101}{100}\sum_{j=2}^{99}\left(\frac{100!}{(100^j)(100-j)!}\right) \right)$ | $9{,}385$ |
 | Multiple Counters | N/A | $3{,}620$ |
 | Multiple Counters with Staged Counter Selection | N/A | $3{,}458$ | 
+
+</div>
