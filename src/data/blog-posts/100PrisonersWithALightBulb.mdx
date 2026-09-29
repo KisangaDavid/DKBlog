@@ -178,7 +178,7 @@ a room containing only a single light bulb.
 The prisoner will be able to observe the current state of the light bulb, 
 as well as toggle it if they wish. The warden will never touch the lightbulb, and the lightbulb is initially off on day $1$. The prisoner also has the option of announcing that
 all prisoners have visited the room at some point in
-time. If the announcement is true, then all prisoners are set free. However, if it is false, then all the prisoners are executed. The warden leaves, and the prisoners huddle 
+time. If the announcement is true, then all the prisoners are set free. However, if it is false, then all the prisoners are executed. The warden leaves, and the prisoners huddle 
 together to discuss their fate. Can they agree on a procedure that will guarantee their freedom in as short a time as possible?
 > Note: Everyone I've talked to who was familiar with this puzzle had only ever heard of solution #2. However, there exist much better solutions, 
 >which will be shown below and in part $2$ of the post!
@@ -228,12 +228,12 @@ Under this procedure, every prisoner except for the counter switches the lightbu
 To determine the expected number of days until the prisoners are free, first lets define a couple useful random variables and probabilities:
 > X - Number of days until the prisoners are free <br />
 > Y<sub>i</sub> - Number of days for the counter to count from i to i + 1 <br />
-> Z<sub>i</sub> - Number of days for a prisoner who has not yet toggled the light to be brought in at count i <br />
-> PZ<sub>i</sub> - Daily probability that a prisoner who has not yet toggled the light is brought in at count i <br />
+> Z<sub>i</sub> - Number of days for a prisoner who has not yet turned on the light to be brought in at count i <br />
+> PZ<sub>i</sub> - Daily probability that a prisoner who has not yet turned on the light is brought in at count i <br />
 > W<sub>i</sub> - Number of days for the counter to be brought in at count i <br />
 > PW<sub>i</sub> - Daily probability that the counter is brought in at count i <br />
 
-Notice that for the counter to count from $i$ to $i + 1$, two things must happen: a prisoner who hasn't yet toggled the light must be selected, and then the counter must be selected. Thus, $Y_i = Z_i + W_i$. Let's mark this down, and derive the expected values for $Z_i$ and $W_i$:
+Notice that for the counter to count from $i$ to $i + 1$, two things must happen: a prisoner who hasn't yet turned on the light must be selected, and then the counter must be selected. Thus, $Y_i = Z_i + W_i$. Let's mark this down, and derive the expected values for $Z_i$ and $W_i$:
 $$
 \begin{align*}
 (1) \quad &Y_i = Z_i + W_i \\[1em]

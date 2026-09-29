@@ -667,7 +667,7 @@ Following stage $0$, the remainder of the procedure is identical to the *Multipl
 2. Sub-counters now count up to $q \cdot count_{sub-roles}$
 3. Sub-counters now increment $t_2$ if $count_{sub} \bmod q = 0$. 
 
-Changes $2$ and $3$ are necessary because, in rare cases, a single prisoner can be assigned the role of sub-counter more than once. <br /> 
+Changes $2$ and $3$ are necessary because, in rare cases, a single prisoner can be assigned the role of sub-counter more than once. <br /> <br />
 The stage $0$ procedure is the warped, demented, and pure-evil twin sibling of the initial stage in the *Staged Counter Selection* solution. Nevertheless, the intuition for it stays the same - each sub-stage results in a single sub-counter with (hopefully) some amount of prisoners pre-counted. The complexity of stage $0$ arises from optimizations done in order to maximize the amount of pre-counted prisoners. Chief amongst these is giving sub-counters the ability to "loan" their counted prisoners to others. This happens whenever $count_{sub}$ is decremented. Loaning prisoners is beneficial because it increases the time for a new sub-counter to be selected in each sub-stage, thus increasing the expected number of pre-counted prisoners. One interesting thing to note is that a sub-counter can loan a prisoner even when their $count_{sub} = 0$ or negative. Since the total sum of counts possessed by the prisoners stays $100$, and each sub-counter must reach their quota before the main counter declares for victory, this is not a problem.
 <br /> <br />
 
@@ -1178,7 +1178,7 @@ also make sure to check out my interactive puzzle site [TheRiddleMan.com](https:
 | ---| --- | --- | 
 | Lucky Chunks | $100^{101}/100!$ | $1.07 \cdot 10^{44}$ | 
 | One Counting Prisoner | $1 + 100H_{99} + 9{,}900$ | $10{,}419$ | 
-| Staged Counter Selection | $10{,}100 + 100\left(H_{99} - 1.01 +  - \frac{101}{100}\sum_{j=2}^{99}\left(\frac{100!}{(100^j)(100-j)!}\right) \right)$ | $9{,}385$ |
+| Staged Counter Selection | $10{,}100 + 100\left(H_{99} - 1.01 - \frac{101}{100}\sum_{j=2}^{99}\left(\frac{100!}{(100^j)(100-j)!}\right) \right)$ | $9{,}385$ |
 | Multiple Counters | N/A | $3{,}620$ |
 | Multiple Counters with Staged Counter Selection | N/A | $3{,}458$ | 
 
