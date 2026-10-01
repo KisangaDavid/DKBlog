@@ -11,9 +11,11 @@ allPosts = allPosts.sort((a, b) => new Date(b.data.publishDate).valueOf() - new 
 ---
 
 <BaseLayout title={title} description={description} current="">
-  <div class="container all-blogs-container">
-    <h1>All Posts</h1>
-    <br />
+  <div id="all-posts-container" class="container all-blogs-container">
+    <header class="all-posts-header">
+      <h1>All Posts</h1>
+      <hr />
+    </header>
     {allPosts.map((post, index) => {
       const href = `/${post.data.slug}`;
       return (
@@ -45,8 +47,28 @@ allPosts = allPosts.sort((a, b) => new Date(b.data.publishDate).valueOf() - new 
 </BaseLayout>
 
 <style>
-  .all-blogs-container {
+  #all-posts-container {
     max-width: 60em;
+  }
+
+  .all-posts-header {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .all-posts-header h1 {
+    width: 100%;
+    padding: 0;
+    margin-bottom: 0;
+    font-size: 2.4em;
+    text-align: center;
+  }
+
+  .all-posts-header hr {
+    margin: 1rem auto;
+    max-width: 95%;
+    width: 45rem;
   }
 
   .post-item-footer {
@@ -110,11 +132,6 @@ allPosts = allPosts.sort((a, b) => new Date(b.data.publishDate).valueOf() - new 
     font-size: 1em;
     line-height: 1.7em;
   }
-
-  h1 {
-    padding-left: 0.9375rem;
-  }
-
   @media (hover: hover) {
     .post-item:hover {
       cursor: pointer;
