@@ -3,6 +3,7 @@ title: "Puzzle: The Undefeated Rooster"
 slug: roosterRiddle
 publishDate: November 9, 2025
 description: You must defeat a surprisingly intelligent rooster in a battle of wits involving 4 piles of corn kernels. There are only 3 rules of battle...
+thumbnailUrl: ../../assets/roosterRiddleThumbnail.png
 ---
 <div classname="centered-image">
 

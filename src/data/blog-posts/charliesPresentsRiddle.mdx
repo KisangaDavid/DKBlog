@@ -3,73 +3,142 @@ title: "Puzzle: Charlie's Presents"
 slug: charliesPresents
 publishDate: December 8, 2025
 description: Charlie puts 26 presents in 100 boxes, labeled 1 to 100. Each second, Alice and Bob look in one box. Alice opens them in order...
+thumbnailUrl: ../../assets/charliesPresentsThumbnail.png
 ---
 
-<style>
-  p {
-    margin-bottom: 0em;
-  }
+import { Tabs, TabItem } from '@astrojs/starlight/components';
 
-pre {
-  line-height: 0.9em;
-  display: block;
-  margin: 0 auto;
-}
-  h2 {
-    margin-bottom: 1em;
-    font-size: 2em;
-  }
+<style is:global>{`
 
-  .caption-text {
-    font-size: 0.9em;
-    line-height: 1.5em;
-    text-align: center;
-    margin-right: 1em;
-    margin-left: 1em;
-    margin-top: 0em;
-    color: var(--text-secondary);
-  }
+    p {
+        margin-bottom: 0em;
+    }
 
-  .centered-image img {
-    display: block;
-    margin: 0 auto;
-    margin-bottom: 0.7em;
-  }
+    pre {
+        line-height: 0.9em;
+        display: block;
+        margin: 0 auto;
+    }
+    h2 {
+        margin-bottom: 1em;
+        font-size: 2em;
+    }
 
-  .centered-image-presents img {
-    display: block;
-    margin: 0 auto;
-    margin-bottom: 0.7em;
-    max-height: 32em;
-    object-fit: contain;
-  }
+    .caption-text {
+        font-size: 0.9em;
+        line-height: 1.5em;
+        text-align: center;
+        margin-right: 1em;
+        margin-left: 1em;
+        margin-top: 0em;
+        color: var(--text-secondary);
+    }
 
-  .with-border img {
-    border-radius: 8px;
-    border: 1px solid black;
-  }
+    .centered-image img {
+        display: block;
+        margin: 0 auto;
+        margin-bottom: 0.7em;
+    }
 
-  .image-container {
-    display: flex;
-    gap: 0.5%;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
+    .centered-image-presents img {
+        display: block;
+        margin: 0 auto;
+        margin-bottom: 0.7em;
+        max-height: 32em;
+        object-fit: contain;
+    }
 
-  .image-container .double-image-and-caption {
-    display: flex;
-    width: 49.75%;
-    flex-direction: column;
-    margin-bottom: 0em;
-  }
+    .with-border img {
+        border-radius: 8px;
+        border: 1px solid black;
+    }
 
-  .katex {
-    overflow-x: auto;
-  }
+    .image-container {
+        display: flex;
+        gap: 0.5%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
 
-</style>
+    .image-container .double-image-and-caption {
+        display: flex;
+        width: 49.75%;
+        flex-direction: column;
+        margin-bottom: 0em;
+    }
 
-<div classname="centered-image-presents">
+    .katex {
+        overflow-x: auto;
+    }
+
+    starlight-tabs {
+        display: block;
+        background: #2e3440;
+        border-radius: 8px;
+        box-shadow: 0.2rem 0.2rem 0.2rem #00000066;
+        overflow: hidden;
+        margin-top: 1.2em;
+        color: #f8f8f2;
+    }
+
+    starlight-tabs [role='tablist'] {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        border-bottom: 2px solid #3b3e48;
+    }
+
+    starlight-tabs .tab {
+        margin: 0 0 -2px;
+    }
+
+    starlight-tabs .tab > [role='tab'] {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1.25rem;
+        color: #9ca3b5;
+        font-family: var(--font-family-sans);
+        font-size: 1rem;
+        line-height: 1.8;
+        text-decoration: none;
+        border-bottom: 2px solid transparent;
+    }
+
+    starlight-tabs .tab > [role='tab']:hover {
+        color: #d8dee9;
+    }
+
+    starlight-tabs .tab > [role='tab'][aria-selected='true'] {
+        color: #f8f8f2;
+        border-color: #8aa9d6;
+        font-weight: 600;
+    }
+
+    starlight-tabs .expressive-code {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    starlight-tabs .expressive-code .frame {
+        box-shadow: none !important;
+    }
+
+    starlight-tabs .expressive-code pre {
+        margin: 0 !important;
+    }
+
+    starlight-tabs .tablist-wrapper ~ [role='tabpanel'] {
+        margin-top: 0.5rem;
+    }
+
+    starlight-tabs .expressive-code pre > code {
+        padding-block-start: 0.5rem;
+    }
+
+`}</style>
+
+<div class="centered-image-presents">
 
 ![Presents](../../assets/charliesPresents.png)
 
@@ -239,8 +308,9 @@ At this point you may be wondering if I'm just throwing numbers around and hopin
 >**Probability of a tie:** (0.3441) <br />
 >**Probability Alice wins:** (0.4165) (derived from the above) <br />
 
-Now, let's bang out a simple python script that estimates the true probabilities by running a bunch of simulated games:
-
+Now, let's bang out a simple program that estimates the true probabilities by running a bunch of simulated games:
+<Tabs>
+<TabItem label="Python">
 ```py
 import random
 
@@ -248,12 +318,10 @@ def simulate_boxes(num_simulations):
     num_ties = 0
     alice_wins = 0
     bob_wins = 0
-
+    alice_order = list(range(1, 101))
+    bob_order = list(range(1, 100, 2)) + list(range(2, 101, 2))
     for _ in range(num_simulations):
         chosen_numbers = set(random.sample(range(1, 101), 26))
-        alice_order = list(range(1, 101))
-        bob_order = list(range(1, 100, 2)) + list(range(2, 101, 2))
-        
         alice_presents_seen = 0
         alice_time = 0
         for time, box in enumerate(alice_order):
@@ -262,7 +330,6 @@ def simulate_boxes(num_simulations):
                 if alice_presents_seen == 26:
                     alice_time = time + 1  
                     break
-        
         bob_presents_seen = 0
         bob_time = 0
         for time, box in enumerate(bob_order):
@@ -271,7 +338,6 @@ def simulate_boxes(num_simulations):
                 if bob_presents_seen == 26:
                     bob_time = time + 1  
                     break
-        
         if alice_time == bob_time:
             num_ties += 1
         elif alice_time < bob_time:
@@ -283,13 +349,106 @@ def simulate_boxes(num_simulations):
     bob_probability = bob_wins / num_simulations
     tie_probability = num_ties / num_simulations
     
-    print(f"Alice win probability: ({alice_probability*100:.2f}%)\n")
-    print(f"Bob win probability: ({bob_probability*100:.2f}%)\n")
-    print(f"Tie probability: ({tie_probability*100:.2f}%)\n")
+    print(f"Alice win probability: ({alice_probability*100:.2f}%)")
+    print(f"Bob win probability: ({bob_probability*100:.2f}%)")
+    print(f"Tie probability: ({tie_probability*100:.2f}%)")
     
 if __name__ == "__main__":
     simulate_boxes(1000000)
 ```
+</TabItem>
+<TabItem label="C++">
+```cpp
+#include <algorithm>
+#include <array>
+#include <iomanip>
+#include <iostream>
+#include <numeric>
+#include <random>
+
+void simulate_boxes(int num_simulations) {
+    int num_ties = 0;
+    int alice_wins = 0;
+    int bob_wins = 0;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::array<int, 100> numbers;
+    std::array<int, 100> alice_order;
+    std::array<int, 100> bob_order;
+    std::iota(numbers.begin(), numbers.end(), 1);
+    std::iota(alice_order.begin(), alice_order.end(), 1);
+    int index = 0;
+    for (int box = 1; box <= 100; box += 2) {
+        bob_order[index++] = box;
+    }
+    for (int box = 2; box <= 100; box += 2) {
+        bob_order[index++] = box;
+    }
+    std::array<int, 26> selected;
+    for (int sim = 0; sim < num_simulations; ++sim) {
+        std::sample(
+            numbers.begin(),
+            numbers.end(),
+            selected.begin(),
+            selected.size(),
+            gen
+        );
+        std::array<bool, 101> chosen{};
+        for (int box : selected) {
+            chosen[box] = true;
+        }
+        int alice_presents_seen = 0;
+        int alice_time = 0;
+        for (int time = 0; time < 100; ++time) {
+            int box = alice_order[time];
+            if (chosen[box]) {
+                ++alice_presents_seen;
+                if (alice_presents_seen == 26) {
+                    alice_time = time + 1;
+                    break;
+                }
+            }
+        }
+        int bob_presents_seen = 0;
+        int bob_time = 0;
+        for (int time = 0; time < 100; ++time) {
+            int box = bob_order[time];
+            if (chosen[box]) {
+                ++bob_presents_seen;
+
+                if (bob_presents_seen == 26) {
+                    bob_time = time + 1;
+                    break;
+                }
+            }
+        }
+        if (alice_time == bob_time) {
+            ++num_ties;
+        }
+        else if (alice_time < bob_time) {
+            ++alice_wins;
+        }
+        else {
+            ++bob_wins;
+        }
+    }
+
+    double alice_probability = static_cast<double>(alice_wins) / num_simulations;
+    double bob_probability = static_cast<double>(bob_wins) / num_simulations;
+    double tie_probability = static_cast<double>(num_ties) / num_simulations;
+    std::cout << std::fixed << std::setprecision(2);
+    std::cout << "Alice win probability: "<< alice_probability * 100 << "%\n";
+    std::cout << "Bob win probability: " << bob_probability * 100 << "%\n";
+    std::cout << "Tie probability: " << tie_probability * 100 << "%\n";
+}
+
+int main() {
+    simulate_boxes(1000000);
+    return 0;
+}
+```
+</TabItem>
+</Tabs>
 
 Output:
 
@@ -307,10 +466,10 @@ Also check out Daniel Litt on Twitter - I was inspired to make this breakdown wh
 
 <br />
 
-<div classname="centered-image with-border">
+<div class="centered-image with-border">
 
 ![Puzzle Poll](../../assets/26PresentsPoll.png)
-<div classname="caption-text">
+<div class="caption-text">
 More than 80% of people were bamboozled by this puzzle!
 </div>
 </div>

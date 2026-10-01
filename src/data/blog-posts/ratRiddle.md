@@ -3,6 +3,7 @@ title: "Puzzle: The Sneaky Rat"
 slug: ratRiddle
 publishDate: November 17, 2025
 description: There's a rat on the loose in your 8 house neighborhood, and it's your job to catch it! The rat starts in a random house and moves to...
+thumbnailUrl: ../../assets/ratRiddleThumbnail.png
 ---
 
 <!-- TODO: move blog styles to a centralized place -->

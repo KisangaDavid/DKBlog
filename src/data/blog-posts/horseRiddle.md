@@ -3,6 +3,7 @@ title: "Puzzle: Horse Trifecta"
 slug: horseRiddle
 publishDate: November 12, 2025
 description: You need to figure out the fastest 3 horses from a group of 25. You can only race 5 horses at a time to find their relative speeds...
+thumbnailUrl: ../../assets/horseRiddleThumbnail.png
 ---
 
 <style>

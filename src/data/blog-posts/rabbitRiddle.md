@@ -3,6 +3,7 @@ title: "Puzzle: Jumping Rabbits"
 slug: rabbitRiddle
 publishDate: December 31, 2025
 description: You are called upon to reorganize a group of rabbits. The rabbits are initially lined up in a single-file row as shown below...
+thumbnailUrl: ../../assets/rabbitRiddleThumbnail.png
 ---
 <div classname="centered-image">
 

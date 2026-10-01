@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content'
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 const title = "David's Blog";
@@ -10,8 +11,8 @@ allPosts = allPosts.sort((a, b) => new Date(b.data.publishDate).valueOf() - new 
 ---
 
 <BaseLayout title={title} description={description} current="">
-  <div class="container">
-    <h1>All Blogs</h1>
+  <div class="container all-blogs-container">
+    <h1>All Posts</h1>
     <br />
     {allPosts.map((post, index) => {
       const href = `/${post.data.slug}`;
@@ -20,15 +21,20 @@ allPosts = allPosts.sort((a, b) => new Date(b.data.publishDate).valueOf() - new 
           { index !== 0 && <hr /> }
           <a href={href}>
             <div class="post-item">
-              <h3>
-              {post.data.title}
-              </h3>
-              <div class="post-item-date">
-                {post.data.publishDate}
+              <div class="post-item-thumbnail-slot">
+                <Image class="post-item-thumbnail" src={post.data.thumbnailUrl} alt="" loading="lazy" />
               </div>
-              <p>{post.data.description}</p>
-              <div class="post-item-footer">
-                <span class="post-item-date">Read More →</span>
+              <div class="post-item-content">
+                <h3>
+                {post.data.title}
+                </h3>
+                <div class="post-item-date">
+                  {post.data.publishDate}
+                </div>
+                <p>{post.data.description}</p>
+                <div class="post-item-footer">
+                  <span class="post-item-date">Read More →</span>
+                </div>
               </div>
             </div>
           </a>
@@ -39,6 +45,10 @@ allPosts = allPosts.sort((a, b) => new Date(b.data.publishDate).valueOf() - new 
 </BaseLayout>
 
 <style>
+  .all-blogs-container {
+    max-width: 60em;
+  }
+
   .post-item-footer {
     font-family: var(--font-family-sans);
     font-weight: 700;
@@ -48,21 +58,48 @@ allPosts = allPosts.sort((a, b) => new Date(b.data.publishDate).valueOf() - new 
     color: var(--text-secondary);
     text-align: left;
     font-size: 0.9em;  
-    margin-right: 16px;
+    margin-right: 1rem;
   }
 
   .container > div > hr {
-    margin: 15px auto;
-    margin-left: 15px;
+    margin: 0.3125rem auto;
   }
 
   .post-item {
-    transition: background-color 0.2s ease, transform 0.2s ease;
-    padding-right: 15px;
-    padding-left: 15px;
-    padding-top: 20px;
-    padding-bottom: 20px;
-    border-radius: 10px;
+    position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 0.625rem;
+    padding: 3.75rem 0;
+  }
+
+  .post-item-thumbnail {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 0.3125rem;
+    transform: translate(-50%, -50%);
+  }
+
+  .post-item-thumbnail-slot {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 40%;
+  }
+
+  .post-item-content {
+    min-width: 0;
+    margin-left: calc(40% + 2.5rem);
+    padding: 0 0.9375rem 0 0;
+  }
+
+  .post-item-content h3,
+  .post-item-content p {
+    margin-top: 0;
   }
 
   a {
@@ -75,15 +112,34 @@ allPosts = allPosts.sort((a, b) => new Date(b.data.publishDate).valueOf() - new 
   }
 
   h1 {
-    padding-left: 15px;
+    padding-left: 0.9375rem;
   }
 
   @media (hover: hover) {
     .post-item:hover {
-      background-color: var(--card-hover); 
       cursor: pointer;
-      transform: translateX(5px);
+      transform: scale(1.04);
+      z-index: 1;
   }
 }
+
+  @media (max-width: 37.5rem) {
+    .post-item {
+      padding: 2.875rem 0;
+    }
+
+    .post-item-thumbnail-slot {
+      width: 35%;
+    }
+
+    .post-item-content {
+      margin-left: calc(35% + 0.75rem);
+      padding: 0 0.5rem 0 0;
+    }
+
+    .post-item-content p {
+      line-height: 1.5em;
+    }
+  }
 
 </style>
